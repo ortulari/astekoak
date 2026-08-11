@@ -792,7 +792,7 @@
 
     let currentLang = localStorage.getItem('huerta_lang') || 'eu'; // 'eu' by default
     let contacts = JSON.parse(localStorage.getItem('huerta_contacts')) || DEFAULT_CONTACTS;
-    let products = JSON.parse(localStorage.getItem('huerta_products')) || DEFAULT_PRODUCTS;
+    let products = [];
     let orders = JSON.parse(localStorage.getItem('huerta_orders')) || DEFAULT_ORDERS;
     const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwUZHcqxBnHoA58QKzxGPg3w0A4P1az3ek1nC9j0UU9GnbelNruWee367dWkP4lQuaP/exec';
     let googleScriptUrl = localStorage.getItem('huerta_script_url') || GOOGLE_SCRIPT_URL;
@@ -834,7 +834,39 @@
         }
       }
     }
+    async function produktuakKargatu() {
+  try {
+    const erantzuna = await fetch(`${GOOGLE_SCRIPT_URL}?ekintza=produktuak`);
+    const datuak = await erantzuna.json();
 
+    if (!datuak.success || !Array.isArray(datuak.produktuak)) {
+      throw new Error('Produktuak ezin izan dira kargatu');
+    }
+
+    products = datuak.produktuak.map(p => ({
+      id: p.id,
+      name: p.izena,
+      category: p.kategoria,
+      orderUnit: p.eskaeraUnitatea,
+      packSize: p.lotearenTamaina,
+      packUnit: p.lotearenUnitatea,
+      price: p.prezioa,
+      priceType: p.prezioMota,
+      min: p.gutxienekoa,
+      step: p.urratsa,
+      available: p.eskuragarri,
+      image: p.irudia || '',
+      tag: ''
+    }));
+
+    renderCategories();
+    renderProducts();
+
+  } catch (errorea) {
+    console.error('Produktuak kargatzean errorea:', errorea);
+    showToast('Produktuak ezin izan dira kargatu', 'error');
+  }
+}
     function setLanguage(lang) {
       currentLang = lang;
       localStorage.setItem('huerta_lang', lang);
@@ -1665,6 +1697,7 @@
       renderProducts();
       renderCart();
       populateContactSelectors();
+      produktuakKargatu();
       
       const tomorrow = new Date();
       tomorrow.setDate(tomorrow.getDate() + 1);
