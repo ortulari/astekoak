@@ -794,7 +794,8 @@
     let contacts = JSON.parse(localStorage.getItem('huerta_contacts')) || DEFAULT_CONTACTS;
     let products = JSON.parse(localStorage.getItem('huerta_products')) || DEFAULT_PRODUCTS;
     let orders = JSON.parse(localStorage.getItem('huerta_orders')) || DEFAULT_ORDERS;
-    let googleScriptUrl = localStorage.getItem('huerta_script_url') || '';
+    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwUZHcqxBnHoA58QKzxGPg3w0A4P1az3ek1nC9j0UU9GnbelNruWee367dWkP4lQuaP/exec';
+    let googleScriptUrl = localStorage.getItem('huerta_script_url') || GOOGLE_SCRIPT_URL;
     let cart = {}; // { prodId: quantity }
     let selectedCategory = 'ALL';
     let currentView = 'store'; // 'store' or 'admin'
