@@ -1,0 +1,1686 @@
+<!DOCTYPE html>
+<html lang="eu" class="h-full bg-stone-50">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Baserriko Baratzea - Zuzeneko Eskaerak</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Inter & Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Outfit', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#f0fdf4',
+              100: '#dcfce7',
+              200: '#bbf7d0',
+              300: '#86efac',
+              400: '#4ade80',
+              500: '#22c55e',
+              600: '#16a34a',
+              700: '#15803d',
+              800: '#166534',
+              900: '#14532d',
+              950: '#052e16',
+            },
+            earth: {
+              50: '#fdfbf7',
+              100: '#f7f2e8',
+              200: '#eee3cf',
+              500: '#92400e',
+              700: '#78350f',
+              800: '#451a03',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Custom Scrollbars & Animations */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    @keyframes pulseSoft {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+    .pulse-soft {
+      animation: pulseSoft 2s infinite ease-in-out;
+    }
+  </style>
+</head>
+<body class="h-full text-slate-800 antialiased flex flex-col font-sans">
+
+  <!-- Top Navigation Header -->
+  <header class="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-stone-200 shadow-sm transition-all">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        
+        <!-- Logo / Brand -->
+        <div class="flex items-center gap-3 cursor-pointer" onclick="switchView('store')">
+          <div class="w-10 h-10 rounded-xl bg-brand-600 text-white flex items-center justify-center shadow-md shadow-brand-600/20">
+            <i data-lucide="sprout" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <h1 class="font-display font-bold text-xl leading-tight text-stone-900 flex items-center gap-1.5" id="headerBrandTitle">
+              Baserriko Baratzea <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-brand-100 text-brand-800 border border-brand-200" id="headerFreshBadge">100% Freskoa</span>
+            </h1>
+            <p class="text-xs text-stone-500" id="headerBrandSubtitle">Lurretik zure mahaira, bitartekaririk gabe</p>
+          </div>
+        </div>
+
+        <!-- Right Controls -->
+        <div class="flex items-center gap-2 sm:gap-3">
+          <!-- Language Selector -->
+          <div class="flex items-center bg-stone-100 p-1 rounded-xl border border-stone-200 text-xs font-bold shadow-inner">
+            <button id="langEuBtn" onclick="setLanguage('eu')" class="px-2.5 py-1 rounded-lg bg-brand-700 text-white transition">EU</button>
+            <button id="langEsBtn" onclick="setLanguage('es')" class="px-2.5 py-1 rounded-lg text-stone-600 hover:text-stone-900 transition">ES</button>
+          </div>
+
+          <!-- Admin access is intentionally hidden from the public storefront. -->
+          <button id="viewToggleBtn" onclick="toggleAdminView()" 
+                  class="hidden flex items-center gap-2 px-3 py-1.5 text-xs sm:text-sm font-medium rounded-xl border border-stone-300 text-stone-700 hover:bg-stone-100 transition">
+            <i data-lucide="layout-dashboard" class="w-4 h-4 text-brand-600"></i>
+            <span id="viewToggleLabel">Baserritar Modua (Admin)</span>
+          </button>
+
+          <!-- Shopping Cart Trigger Button -->
+          <button onclick="openCartModal()" id="cartBtn" class="relative flex items-center gap-2 px-3.5 py-2 bg-brand-700 hover:bg-brand-800 text-white font-semibold rounded-xl shadow-sm transition">
+            <i data-lucide="shopping-basket" class="w-5 h-5"></i>
+            <span class="hidden sm:inline" id="myCartLabel">Nire Saskia</span>
+            <span id="cartCountBadge" class="bg-amber-400 text-stone-900 font-extrabold text-xs px-2 py-0.5 rounded-full">0</span>
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Wrapper -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+    <!-- Toast Notification Container -->
+    <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- VIEW 1: CLIENT STOREFRONT -->
+    <section id="storeView" class="space-y-6">
+      
+      <!-- Hero Banner -->
+      <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-brand-900 via-brand-800 to-emerald-900 text-white p-6 sm:p-8 shadow-lg">
+        <div class="relative z-10 max-w-2xl space-y-3">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md text-amber-300 text-xs font-semibold">
+            <i data-lucide="sun" class="w-3.5 h-3.5"></i> <span id="heroBadge">Aste honetako uzta</span>
+          </div>
+          <h2 class="font-display text-2xl sm:text-4xl font-extrabold tracking-tight" id="heroTitle">Egin zure eskaera zuzenean barazki eta fruituetan</h2>
+          <p class="text-brand-100 text-sm sm:text-base leading-relaxed" id="heroDesc">
+            Aukeratu behar dituzun kiloak edo unitateak. Zure erosketa-zerrenda jasoko dugu, baratzean bertan bildu eta prestatuko dugu. <span class="font-semibold text-white">Jasotzean ordaintzen da!</span>
+          </p>
+          <div class="pt-2 flex flex-wrap gap-4 text-xs font-medium text-brand-200">
+            <span class="flex items-center gap-1.5"><i data-lucide="check-circle2" class="w-4 h-4 text-amber-400"></i> <span id="heroMinOrder">Eskaera minimorik gabe</span></span>
+            <span class="flex items-center gap-1.5"><i data-lucide="check-circle2" class="w-4 h-4 text-amber-400"></i> <span id="heroPickup">Finkan jaso edo esku-eskura eman</span></span>
+            <span class="flex items-center gap-1.5"><i data-lucide="check-circle2" class="w-4 h-4 text-amber-400"></i> <span id="heroFreshness">Freskotasun bermea</span></span>
+          </div>
+        </div>
+        <!-- Background Graphic -->
+        <div class="absolute -right-10 -bottom-10 opacity-10 pointer-events-none">
+          <i data-lucide="carrot" class="w-80 h-80 text-white"></i>
+        </div>
+      </div>
+
+      <!-- Filters and Search Bar -->
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-stone-200 pb-4">
+        <!-- Categories -->
+        <div class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1 md:pb-0" id="categoryContainer">
+          <!-- Rendered dynamically -->
+        </div>
+
+        <!-- Search Input -->
+        <div class="relative w-full md:w-72 flex-shrink-0">
+          <i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-stone-400"></i>
+          <input type="text" id="searchInput" oninput="filterProducts()" placeholder="Bilatu tomatea, azazkala, patata..." 
+                 class="w-full pl-9 pr-4 py-2 bg-white border border-stone-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 shadow-sm">
+        </div>
+      </div>
+
+      <!-- Product Grid Container -->
+      <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+        <!-- Products populated dynamically -->
+      </div>
+
+      <!-- Empty Search State -->
+      <div id="emptySearchState" class="hidden text-center py-12 space-y-3">
+        <div class="w-16 h-16 bg-stone-100 rounded-full flex items-center justify-center mx-auto text-stone-400">
+          <i data-lucide="search-x" class="w-8 h-8"></i>
+        </div>
+        <h3 class="font-display font-bold text-stone-700 text-lg" id="emptyStateTitle">Ez dugu bilatutakoa aurkitu</h3>
+        <p class="text-stone-500 text-sm" id="emptyStateDesc">Saiatu beste izen bat idazten edo garbitu bilaketa-iragazkia.</p>
+        <button onclick="resetSearch()" class="px-4 py-2 bg-stone-200 text-stone-700 rounded-xl text-sm font-medium hover:bg-stone-300 transition" id="emptyStateBtn">Ikusi produktu guztiak</button>
+      </div>
+
+    </section>
+
+    <!-- VIEW 2: ADMIN DASHBOARD (BASERRITAR MODUA) -->
+    <section id="adminView" class="hidden space-y-6">
+      
+      <!-- Admin Header Banner -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-stone-900 text-white p-6 rounded-2xl shadow-md">
+        <div>
+          <div class="flex items-center gap-2 text-amber-400 font-semibold text-xs uppercase tracking-wider mb-1">
+            <i data-lucide="shield-check" class="w-4 h-4"></i> <span id="adminTitleBadge">Baratzea Kudeatzeko Panel Kudeatzailea</span>
+          </div>
+          <h2 class="font-display text-2xl font-bold" id="adminHeaderTitle">Eskaerak eta Uzta Kudeaketa</h2>
+          <p class="text-stone-400 text-sm" id="adminHeaderSubtitle">Begiratu sartzen diren eskaerak, prestatu saskiak eta inprimatu bilketa-orria.</p>
+        </div>
+        <div class="flex items-center gap-2 flex-wrap">
+          <button onclick="openSheetsConfigModal()" class="flex items-center gap-2 px-3 py-2.5 bg-emerald-700 hover:bg-emerald-600 text-white font-semibold rounded-xl text-sm transition shadow-sm border border-emerald-500">
+            <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
+            <span>Google Sheets URL</span>
+          </button>
+          <button onclick="fetchOrdersFromGoogleSheets()" id="btnSyncOrders" class="flex items-center gap-2 px-3 py-2.5 bg-stone-800 hover:bg-stone-700 text-stone-200 font-medium rounded-xl text-sm border border-stone-700 transition">
+            <i data-lucide="refresh-cw" class="w-4 h-4" id="syncIcon"></i>
+            <span id="btnAdminSync">Sincronizar</span>
+          </button>
+          <button onclick="openAddProductModal()" class="flex items-center gap-2 px-4 py-2.5 bg-brand-600 hover:bg-brand-500 text-white font-semibold rounded-xl text-sm transition shadow-sm">
+            <i data-lucide="plus-circle" class="w-4 h-4"></i>
+            <span id="btnAdminAddProd">Gehitu Produktua</span>
+          </button>
+          <button onclick="exportOrdersJSON()" class="flex items-center gap-2 px-3 py-2.5 bg-stone-800 hover:bg-stone-700 text-stone-200 font-medium rounded-xl text-sm border border-stone-700 transition">
+            <i data-lucide="download" class="w-4 h-4"></i>
+            <span class="hidden md:inline" id="btnAdminExport">Exportar</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Admin Tabs Navigation -->
+      <div class="flex border-b border-stone-200 space-x-6 text-sm font-medium">
+        <button onclick="switchAdminTab('orders')" id="tabBtnOrders" class="pb-3 border-b-2 border-brand-600 text-brand-700 font-bold flex items-center gap-2">
+          <i data-lucide="clipboard-list" class="w-4 h-4"></i> <span id="tabLabelOrders">Jasotako Eskaerak</span> (<span id="adminPendingCount">0</span>)
+        </button>
+        <button onclick="switchAdminTab('harvest')" id="tabBtnHarvest" class="pb-3 border-b-2 border-transparent text-stone-500 hover:text-stone-800 flex items-center gap-2">
+          <i data-lucide="sprout" class="w-4 h-4"></i> <span id="tabLabelHarvest">Uzta Guztia / Resumen Cosecha</span>
+        </button>
+        <button onclick="switchAdminTab('catalog')" id="tabBtnCatalog" class="pb-3 border-b-2 border-transparent text-stone-500 hover:text-stone-800 flex items-center gap-2">
+          <i data-lucide="boxes" class="w-4 h-4"></i> <span id="tabLabelCatalog">Katalogoa eta Inbentarioa</span>
+        </button>
+      </div>
+
+      <!-- TAB CONTENT 1: ORDERS MANAGEMENT -->
+      <div id="adminOrdersTab" class="space-y-4">
+        <!-- Order Filters -->
+        <div class="flex flex-wrap items-center justify-between gap-3 bg-white p-3 rounded-xl border border-stone-200">
+          <div class="flex flex-wrap items-center gap-4 text-sm">
+            <div class="flex items-center gap-2">
+              <span class="text-stone-500 font-medium" id="filterStatusLabel">Egoera:</span>
+              <select id="adminStatusFilter" onchange="renderAdminOrders()" class="bg-stone-50 border border-stone-300 rounded-lg px-2.5 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+                <option value="ALL">Guztiak / Todos</option>
+                <option value="Pendiente">Zazpitan / Pendiente</option>
+                <option value="Preparando">Prestatzen / Preparando</option>
+                <option value="Listo">Prest / Listo</option>
+                <option value="Completado">Eginda / Completado</option>
+              </select>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <span class="text-stone-500 font-medium" id="filterContactLabel">Harreman pertsona:</span>
+              <select id="adminContactFilter" onchange="renderAdminOrders()" class="bg-stone-50 border border-stone-300 rounded-lg px-2.5 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+                <option value="ALL">Pertsona guztiak / Todos</option>
+                <!-- Dynamically filled -->
+              </select>
+            </div>
+          </div>
+          <div class="text-xs text-stone-500" id="ordersSummaryText">
+            0 eskaera erakusten
+          </div>
+        </div>
+
+        <!-- Orders List -->
+        <div id="adminOrdersList" class="space-y-4">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+
+      <!-- TAB CONTENT 2: HARVEST LIST (TOTAL QUANTITIES) -->
+      <div id="adminHarvestTab" class="hidden space-y-4">
+        <div class="bg-white p-6 rounded-2xl border border-stone-200 shadow-sm space-y-4">
+          <div class="flex items-center justify-between pb-4 border-b border-stone-200">
+            <div>
+              <h3 class="font-display text-lg font-bold text-stone-900" id="harvestTitle">Uzta Biltzeko Zerrenda Zoritxarrez</h3>
+              <p class="text-xs text-stone-500" id="harvestDesc">Dagoeneko jasotako eskaera guztiei erantzuteko baratzean bildu behar duzun kilo eta unitate kopuru osoa.</p>
+            </div>
+            <button onclick="window.print()" class="flex items-center gap-1.5 px-3 py-1.5 bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-semibold rounded-lg transition">
+              <i data-lucide="printer" class="w-4 h-4"></i> <span id="btnPrintSheet">Inprimatu Orria</span>
+            </button>
+          </div>
+
+          <div id="harvestSummaryList" class="divide-y divide-stone-100">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB CONTENT 3: CATALOG MANAGEMENT -->
+      <div id="adminCatalogTab" class="hidden space-y-4">
+        <div class="bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-sm">
+          <div class="p-4 border-b border-stone-200 flex justify-between items-center bg-stone-50">
+            <h3 class="font-display font-bold text-stone-800" id="catalogTitle">Baratze Produktuen Katalogoa</h3>
+            <span class="text-xs text-stone-500" id="catalogSubtitle">Eskuragarritasuna edo prezioak unean bertan alda ditzakezu</span>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm text-stone-700">
+              <thead class="bg-stone-100 text-stone-600 font-semibold text-xs uppercase tracking-wider border-b border-stone-200">
+                <tr>
+                  <th class="p-3.5" id="thProduct">Produktua</th>
+                  <th class="p-3.5" id="thCategory">Kategoria</th>
+                  <th class="p-3.5" id="thPrice">Prezioa</th>
+                  <th class="p-3.5" id="thUnit">Mota</th>
+                  <th class="p-3.5" id="thStatus">Egoera</th>
+                  <th class="p-3.5 text-right" id="thActions">Ekintzak</th>
+                </tr>
+              </thead>
+              <tbody id="adminCatalogTable" class="divide-y divide-stone-100">
+                <!-- Rendered dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- MODAL: SHOPPING CART -->
+  <div id="cartModal" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-sm flex justify-end transition-opacity">
+    <div class="bg-white w-full max-w-md h-full flex flex-col shadow-2xl transform transition-transform duration-300">
+      
+      <!-- Cart Header -->
+      <div class="p-4 sm:p-5 border-b border-stone-200 flex items-center justify-between bg-stone-50">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-brand-100 text-brand-700 flex items-center justify-center">
+            <i data-lucide="shopping-bag" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="font-display font-bold text-stone-900 text-lg" id="cartTitle">Zure Baratze Eskaera</h3>
+            <p class="text-xs text-stone-500" id="cartSubtitle">Lineako ordainketarik gabe • Berresteko prest</p>
+          </div>
+        </div>
+        <button onclick="closeCartModal()" class="p-2 text-stone-400 hover:text-stone-600 rounded-lg hover:bg-stone-200 transition">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Cart Items List -->
+      <div id="cartItemsContainer" class="flex-1 overflow-y-auto p-4 space-y-3 divide-y divide-stone-100">
+        <!-- Rendered dynamically -->
+      </div>
+
+      <!-- Cart Footer / Checkout Trigger -->
+      <div id="cartFooter" class="p-4 border-t border-stone-200 bg-stone-50 space-y-3">
+        <div class="space-y-1">
+          <div class="flex justify-between text-xs text-stone-500">
+            <span id="lblSubtotal">Subtotal estimatua:</span>
+            <span id="cartSubtotal">0.00 €</span>
+          </div>
+          <div class="flex justify-between text-base font-bold text-stone-900">
+            <span id="lblTotal">Guztira estimatua:</span>
+            <span id="cartTotal" class="text-brand-700 text-lg">0.00 €</span>
+          </div>
+          <p class="text-[11px] text-stone-400 italic text-right" id="lblNoticePrice">*Azken prezioa pisaketa zehatzaren arabera alda daiteke saskia prestatzean.</p>
+        </div>
+
+        <button id="checkoutBtn" onclick="openCheckoutForm()" class="w-full py-3 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl shadow-md transition flex items-center justify-center gap-2">
+          <span id="btnContinueCheckout">Jarraitu Datuen Betetzerantz</span>
+          <i data-lucide="arrow-right" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MODAL: CHECKOUT DETAILS FORM -->
+  <div id="checkoutModal" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white max-w-lg w-full rounded-2xl shadow-2xl overflow-hidden my-8">
+      
+      <div class="p-5 bg-brand-800 text-white flex items-center justify-between">
+        <div>
+          <h3 class="font-display font-bold text-lg" id="checkoutModalTitle">Eskaera Prestatzeko Datuak</h3>
+          <p class="text-xs text-brand-200" id="checkoutModalSubtitle">Esaguzu nora eta noiz banatu behar dizugun</p>
+        </div>
+        <button onclick="closeCheckoutModal()" class="text-brand-200 hover:text-white">
+          <i data-lucide="x" class="w-6 h-6"></i>
+        </button>
+      </div>
+
+      <form id="orderForm" onsubmit="handleOrderSubmit(event)" class="p-6 space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-stone-700 uppercase tracking-wider mb-1" id="labelName">Izen-abizenak *</label>
+          <input type="text" id="customerName" required placeholder="Adib. Ane Miren" 
+                 class="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-stone-700 uppercase tracking-wider mb-1" id="labelPhone">Telefonoa / WhatsApp *</label>
+            <input type="tel" id="customerPhone" required placeholder="Adib. 612 345 678" 
+                   class="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-stone-700 uppercase tracking-wider mb-1" id="labelDelivery">Banaketa Mota *</label>
+            <select id="deliveryMethod" onchange="toggleDeliveryAddressField()" class="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+              <option value="Recogida en Finca">Finkan jaso (Doan) / Recogida en finca</option>
+              <option value="Entrega en Mano">Esku-eskura eman / Entrega en mano</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Contact Person Selection -->
+        <div>
+          <label class="block text-xs font-semibold text-stone-700 uppercase tracking-wider mb-1" id="labelContactPerson">Zure harreman-pertsona (Nork eramango/emango dizu?) *</label>
+          <select id="contactPerson" required class="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+            <!-- Dynamically populated team members -->
+          </select>
+        </div>
+
+        <div id="addressFieldGroup" class="hidden">
+          <label class="block text-xs font-semibold text-stone-700 uppercase tracking-wider mb-1" id="labelAddress">Adostutako Topagunea / Helbidea *</label>
+          <input type="text" id="customerAddress" placeholder="Kalea, zenbakia, herria edo adostutako lekua..." 
+                 class="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-stone-700 uppercase tracking-wider mb-1" id="labelDate">Nahi duzun Eguna *</label>
+          <input type="date" id="deliveryDate" required 
+                 class="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-stone-700 uppercase tracking-wider mb-1" id="labelNotes">Oharrak edo Preferentziak</label>
+          <textarea id="customerNotes" rows="2" placeholder="Adib: Tomate berdexkak, deitu heldu aurretik..." 
+                    class="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"></textarea>
+        </div>
+
+        <!-- Info box inside checkout -->
+        <div class="p-3 bg-amber-50 rounded-xl border border-amber-200 text-xs text-amber-900 flex items-start gap-2">
+          <i data-lucide="info" class="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5"></i>
+          <div id="modalNoticeText">
+            <strong>Gogoan izan:</strong> Ez duzu orain ezer ordaintzen. Zure saskia prestatuko dugu eta adostutako moduan jasoko duzu.
+          </div>
+        </div>
+
+        <div class="pt-2">
+          <button type="submit" id="btnSubmitOrder" class="w-full py-3.5 px-4 bg-brand-700 hover:bg-brand-800 text-white font-bold rounded-xl transition flex items-center justify-center gap-2 shadow-md">
+            <i data-lucide="check-circle" class="w-5 h-5" id="submitBtnIcon"></i>
+            <span id="btnSubmitSystem">Eskaera berretsi eta bidali</span>
+          </button>
+        </div>
+
+      </form>
+
+    </div>
+  </div>
+
+  <!-- MODAL: GOOGLE SHEETS CONFIGURATION -->
+  <div id="sheetsConfigModal" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white max-w-md w-full rounded-2xl shadow-2xl overflow-hidden">
+      <div class="p-4 bg-stone-900 text-white flex justify-between items-center">
+        <h3 class="font-display font-bold text-base flex items-center gap-2">
+          <i data-lucide="file-spreadsheet" class="w-5 h-5 text-emerald-400"></i> Google Sheets Konfigurazioa
+        </h3>
+        <button onclick="closeSheetsConfigModal()" class="text-stone-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="p-5 space-y-4 text-sm text-stone-700">
+        <p class="text-xs text-stone-600 leading-relaxed">
+          Sartu zure Google Apps Script-eko Web App URLa zentroko datu-basearekin konektatzeko.
+        </p>
+
+        <div>
+          <label class="block text-xs font-semibold text-stone-800 uppercase mb-1">Google Apps Script Web App URL</label>
+          <input type="url" id="googleScriptUrlInput" placeholder="https://script.google.com/macros/s/.../exec" 
+                 class="w-full px-3 py-2.5 border border-stone-300 rounded-xl text-xs focus:ring-2 focus:ring-brand-500 font-mono">
+        </div>
+
+        <div class="p-3 bg-stone-100 rounded-xl text-xs text-stone-600 space-y-1">
+          <div class="font-bold text-stone-800">💡 Google Sheets egoera:</div>
+          <div id="sheetsConfigStatus" class="text-stone-500">Konektatu gabe / No configurado</div>
+        </div>
+
+        <div class="pt-2 flex justify-end gap-2">
+          <button type="button" onclick="closeSheetsConfigModal()" class="px-4 py-2 border border-stone-300 rounded-xl text-xs text-stone-600 font-medium">Utzi</button>
+          <button type="button" onclick="saveGoogleSheetsUrl()" class="px-4 py-2 bg-brand-700 hover:bg-brand-800 text-white font-bold rounded-xl text-xs shadow-sm">Gorde / Guardar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: SUCCESS CONFIRMATION -->
+  <div id="orderSuccessModal" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white max-w-md w-full rounded-2xl shadow-2xl overflow-hidden text-center p-6 space-y-4">
+      <div class="w-16 h-16 bg-brand-100 text-brand-700 rounded-full flex items-center justify-center mx-auto">
+        <i data-lucide="check-circle-2" class="w-10 h-10"></i>
+      </div>
+      <div>
+        <h3 class="font-display font-bold text-xl text-stone-900" id="successModalTitle">Eskaera jaso da! / ¡Pedido Recibido!</h3>
+        <p class="text-xs text-stone-500 mt-1" id="successModalSubtitle">Zure eskaera Google Sheets datu-basean erregistratu da eta prestaketan jarriko dugu.</p>
+      </div>
+      <div class="bg-stone-50 p-4 rounded-xl border border-stone-200 text-left text-xs space-y-1.5 font-mono text-stone-700" id="successOrderDetails">
+        <!-- Dynamically populated -->
+      </div>
+      <button onclick="closeSuccessModal()" class="w-full py-3 bg-brand-700 hover:bg-brand-800 text-white font-bold rounded-xl shadow-md text-sm">
+        Ados / Entendido
+      </button>
+    </div>
+  </div>
+
+  <!-- MODAL: ADD PRODUCT (ADMIN) -->
+  <div id="addProductModal" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white max-w-md w-full rounded-2xl shadow-2xl overflow-hidden">
+      <div class="p-4 bg-stone-900 text-white flex justify-between items-center">
+        <h3 class="font-display font-bold" id="addProdModalTitle">Gehitu Produktu Berria Baratzerako</h3>
+        <button onclick="closeAddProductModal()" class="text-stone-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form id="addProductForm" onsubmit="handleAddProductSubmit(event)" class="p-5 space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-stone-700 mb-1">Produktuarren Izen-abizena</label>
+          <input type="text" id="newProdName" required placeholder="Adib. Kalabazin Berdea" class="w-full px-3 py-2 border border-stone-300 rounded-lg text-sm">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-stone-700 mb-1">Kategoria</label>
+            <select id="newProdCategory" class="w-full px-3 py-2 border border-stone-300 rounded-lg text-sm">
+              <option value="Verduras">Barazkiak / Verduras</option>
+              <option value="Hortalizas">Baratzekariak / Hortalizas</option>
+              <option value="Frutas">Fruituak / Frutas</option>
+              <option value="Hierbas">Belarrak / Hierbas</option>
+              <option value="Cestas">Saskiak / Cestas</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-stone-700 mb-1">Salmenta Mota</label>
+            <select id="newProdUnitType" class="w-full px-3 py-2 border border-stone-300 rounded-lg text-sm">
+              <option value="kg">Kiloka (kg)</option>
+              <option value="ud">Unitateka / Sortaka</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-stone-700 mb-1">Prezioa (€)</label>
+            <input type="number" step="0.05" id="newProdPrice" required placeholder="2.50" class="w-full px-3 py-2 border border-stone-300 rounded-lg text-sm">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-stone-700 mb-1">Paso Incremento</label>
+            <input type="number" step="0.1" id="newProdStep" required value="0.5" class="w-full px-3 py-2 border border-stone-300 rounded-lg text-sm">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-stone-700 mb-1">Irudiaren URL-a (Opcional)</label>
+          <input type="url" id="newProdImage" placeholder="https://..." class="w-full px-3 py-2 border border-stone-300 rounded-lg text-sm">
+        </div>
+
+        <div class="pt-2 flex justify-end gap-2">
+          <button type="button" onclick="closeAddProductModal()" class="px-4 py-2 border border-stone-300 rounded-lg text-sm text-stone-600">Utzi</button>
+          <button type="submit" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white font-medium rounded-lg text-sm">Gorde Produktua</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Internationalization Dictionary (Basque default + Spanish option)
+    const I18N = {
+      eu: {
+        brandName: "Baserriko Baratzea",
+        freshBadge: "100% Freskoa",
+        brandSubtitle: "Lurretik zure mahaira, bitartekaririk gabe",
+        modeAdmin: "Baserritar Modua (Admin)",
+        modeStore: "Dendara itzuli",
+        myCart: "Nire Saskia",
+        heroBadge: "Aste honetako uzta",
+        heroTitle: "Egin zure eskaera zuzenean barazki eta fruituetan",
+        heroDesc: "Aukeratu behar dituzun kiloak edo unitateak. Zure erosketa-zerrenda jasoko dugu, baratzean bertan bildu eta prestatuko dugu. <span class=\"font-semibold text-white\">Jasotzean ordaintzen da!</span>",
+        noMinOrder: "Eskaera minimorik gabe",
+        pickupDelivery: "Finkan jaso edo esku-eskura eman",
+        freshnessGuarantee: "Freskotasun bermea",
+        searchPlaceholder: "Bilatu tomatea, azazkala, patata...",
+        categories: {
+          ALL: "Denak",
+          Verduras: "Barazkiak",
+          Hortalizas: "Baratzekariak",
+          Frutas: "Fruituak",
+          Hierbas: "Belarrak",
+          Cestas: "Saskiak"
+        },
+        labelName: "Izen-abizenak *",
+        labelPhone: "Telefonoa / WhatsApp *",
+        labelDelivery: "Banaketa Mota *",
+        labelContactPerson: "Zure harreman-pertsona (Nork eramango/emango dizu?) *",
+        labelAddress: "Adostutako Topagunea / Helbidea *",
+        labelDate: "Nahi duzun Eguna *",
+        labelNotes: "Oharrak edo Preferentziak",
+        modalNotice: "<strong>Gogoan izan:</strong> Ez duzu orain ezer ordaintzen. Zure saskia prestatuko dugu eta adostutako moduan jasoko duzu.",
+        btnSubmitSystem: "Eskaera berretsi eta bidali",
+        addBtn: "Gehitu",
+        kgUnit: "kg",
+        udUnit: "ud",
+        emptyStateTitle: "Ez dugu bilatutakoa aurkitu",
+        emptyStateDesc: "Saiatu beste izen bat idazten edo garbitu bilaketa-iragazkia.",
+        emptyStateBtn: "Ikusi produktu guztiak",
+        cartTitle: "Zure Baratze Eskaera",
+        cartSubtitle: "Lineako ordainketarik gabe • Berresteko prest",
+        lblSubtotal: "Subtotal estimatua:",
+        lblTotal: "Guztira estimatua:",
+        lblNoticePrice: "*Azken prezioa pisaketa zehatzaren arabera alda daiteke saskia prestatzean.",
+        btnContinueCheckout: "Jarraitu Datuen Betetzerantz",
+        checkoutModalTitle: "Eskaera Prestatzeko Datuak",
+        checkoutModalSubtitle: "Esaguzu nora eta noiz banatu behar dizugun"
+      },
+      es: {
+        brandName: "Huerta Del Rancho",
+        freshBadge: "100% Fresco",
+        brandSubtitle: "De la tierra a tu mesa, sin intermediarios",
+        modeAdmin: "Modo Huertano (Admin)",
+        modeStore: "Volver a la Tienda",
+        myCart: "Mi Cesta",
+        heroBadge: "Cosecha de esta semana",
+        heroTitle: "Haz tu pedido directo de verduras y frutas",
+        heroDesc: "Selecciona las cantidades en kilos o unidades que necesitas. Nos llega tu lista de la compra, recolectamos el producto fresco en la huerta y te lo preparamos. <span class=\"font-semibold text-white\">¡Pagas al recibir!</span>",
+        noMinOrder: "Sin pedido mínimo",
+        pickupDelivery: "Recogida en finca o entrega en mano",
+        freshnessGuarantee: "Garantía de frescura",
+        searchPlaceholder: "Buscar tomate, acelga, patata...",
+        categories: {
+          ALL: "Todos",
+          Verduras: "Verduras",
+          Hortalizas: "Hortalizas",
+          Frutas: "Frutas",
+          Hierbas: "Hierbas",
+          Cestas: "Cestas"
+        },
+        labelName: "Nombre Completo *",
+        labelPhone: "Teléfono / WhatsApp *",
+        labelDelivery: "Tipo de Entrega *",
+        labelContactPerson: "Persona de contacto (¿Quién te lo lleva/entrega?) *",
+        labelAddress: "Lugar de encuentro o dirección *",
+        labelDate: "Día Preferido de Entrega/Recogida *",
+        labelNotes: "Notas o Preferencias",
+        modalNotice: "<strong>Recuerda:</strong> No pagas nada ahora. Prepararemos tu caja y acordaremos la entrega.",
+        btnSubmitSystem: "Confirmar y Enviar Pedido",
+        addBtn: "Añadir",
+        kgUnit: "kg",
+        udUnit: "ud",
+        emptyStateTitle: "No encontramos lo que buscas",
+        emptyStateDesc: "Prueba buscando con otro nombre o borra el filtro de búsqueda.",
+        emptyStateBtn: "Ver todos los productos",
+        cartTitle: "Tu Pedido de Huerta",
+        cartSubtitle: "Sin pagos online • Confirmación directa",
+        lblSubtotal: "Subtotal estimado:",
+        lblTotal: "Total estimado:",
+        lblNoticePrice: "*El importe final puede variar ligeramente según pesaje exacto.",
+        btnContinueCheckout: "Continuar con Datos de Entrega",
+        checkoutModalTitle: "Datos para la Preparación",
+        checkoutModalSubtitle: "Indícanos dónde y cuándo entregártelo"
+      }
+    };
+
+    // Contact Persons / Team Members
+    const DEFAULT_CONTACTS = [
+      { id: 'c1', name: 'Jon', zone: 'Bilbao / Durangaldea', phone: '611 222 333' },
+      { id: 'c2', name: 'Ane', zone: 'Donostia / Bidasoa', phone: '622 333 444' },
+      { id: 'c3', name: 'Mikel', zone: 'Gasteiz / Aiala', phone: '633 444 555' },
+      { id: 'c4', name: 'Maite', zone: 'Finka / Zazpiak', phone: '644 555 666' }
+    ];
+
+    // Rich initial catalog of fresh produce
+    const DEFAULT_PRODUCTS = [
+      {
+        id: 'p1',
+        name: 'Tomate de Huerta Rosa / Baserriko Tomate Arrosa',
+        category: 'Hortalizas',
+        price: 2.80,
+        unitType: 'kg',
+        step: 0.5,
+        min: 0.5,
+        available: true,
+        tag: 'Garaiko / De Temporada',
+        image: 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?auto=format&fit=crop&w=600&q=80'
+      },
+      {
+        id: 'p2',
+        name: 'Lechuga Romana / Entsalada Uraitz',
+        category: 'Verduras',
+        price: 0.90,
+        unitType: 'ud',
+        step: 1,
+        min: 1,
+        available: true,
+        tag: 'Bildu Berria',
+        image: 'https://images.unsplash.com/photo-1622206151226-18ca2c9ab4a1?auto=format&fit=crop&w=600&q=80'
+      },
+      {
+        id: 'p3',
+        name: 'Zanahoria Dulce / Azenario Gozoa',
+        category: 'Hortalizas',
+        price: 1.60,
+        unitType: 'kg',
+        step: 0.5,
+        min: 0.5,
+        available: true,
+        tag: 'Ekologikoa',
+        image: 'https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?auto=format&fit=crop&w=600&q=80'
+      },
+      {
+        id: 'p4',
+        name: 'Calabacín Verde / Kuiatxo Berdea',
+        category: 'Hortalizas',
+        price: 1.90,
+        unitType: 'kg',
+        step: 0.5,
+        min: 0.5,
+        available: true,
+        tag: 'Garaiko / De Temporada',
+        image: 'https://images.unsplash.com/photo-1590165482129-1b8b27698780?auto=format&fit=crop&w=600&q=80'
+      },
+      {
+        id: 'p5',
+        name: 'Acelgas Frescas / Azazkalak',
+        category: 'Verduras',
+        price: 1.50,
+        unitType: 'ud',
+        step: 1,
+        min: 1,
+        available: true,
+        tag: 'Sorta / Manojo',
+        image: 'https://images.unsplash.com/photo-1576045057995-568f588f82fb?auto=format&fit=crop&w=600&q=80'
+      },
+      {
+        id: 'p6',
+        name: 'Patata Nueva / Patata Berria',
+        category: 'Hortalizas',
+        price: 1.20,
+        unitType: 'kg',
+        step: 1,
+        min: 1,
+        available: true,
+        tag: 'Oinarrizkoa',
+        image: 'https://images.unsplash.com/photo-1518977676601-b53f82aba655?auto=format&fit=crop&w=600&q=80'
+      },
+      {
+        id: 'p7',
+        name: 'Pimiento Verde Guernica / Piper Berdea',
+        category: 'Hortalizas',
+        price: 3.20,
+        unitType: 'kg',
+        step: 0.5,
+        min: 0.5,
+        available: true,
+        tag: 'Tokikoa / Local',
+        image: 'https://images.unsplash.com/photo-1563565375-f3fdfdbefa83?auto=format&fit=crop&w=600&q=80'
+      },
+      {
+        id: 'p8',
+        name: 'Cesta Variada Baratzea / Baratze Saskia (5kg)',
+        category: 'Cestas',
+        price: 14.50,
+        unitType: 'ud',
+        step: 1,
+        min: 1,
+        available: true,
+        tag: 'Aukera Bikaina!',
+        image: 'https://images.unsplash.com/photo-1610832958506-aa56368176cf?auto=format&fit=crop&w=600&q=80'
+      }
+    ];
+
+    // Initial Orders
+    const DEFAULT_ORDERS = [
+      {
+        id: 'PED-1001',
+        customerName: 'Carlos Mendoza',
+        phone: '654 987 321',
+        deliveryMethod: 'Entrega en Mano',
+        contactPerson: 'Jon',
+        address: 'Calle Mayor 14, Bilbao',
+        deliveryDate: new Date().toISOString().split('T')[0],
+        notes: 'Arratsaldez 17:00etatik aurrera.',
+        status: 'Pendiente',
+        createdAt: new Date().toLocaleString('es-ES'),
+        items: [
+          { id: 'p1', name: 'Tomate de Huerta Rosa / Baserriko Tomate Arrosa', qty: 2.0, unitType: 'kg', price: 2.80 },
+          { id: 'p2', name: 'Lechuga Romana / Entsalada Uraitz', qty: 2, unitType: 'ud', price: 0.90 }
+        ],
+        total: 7.40
+      }
+    ];
+
+    let currentLang = localStorage.getItem('huerta_lang') || 'eu'; // 'eu' by default
+    let contacts = JSON.parse(localStorage.getItem('huerta_contacts')) || DEFAULT_CONTACTS;
+    let products = JSON.parse(localStorage.getItem('huerta_products')) || DEFAULT_PRODUCTS;
+    let orders = JSON.parse(localStorage.getItem('huerta_orders')) || DEFAULT_ORDERS;
+    let googleScriptUrl = localStorage.getItem('huerta_script_url') || '';
+    let cart = {}; // { prodId: quantity }
+    let selectedCategory = 'ALL';
+    let currentView = 'store'; // 'store' or 'admin'
+    let currentAdminTab = 'orders'; // 'orders', 'harvest', 'catalog'
+
+
+    // --- Simple admin gate for this small private-access project ---
+    // Public visitors never see the admin button. To open admin, add ?admin=1 to the URL.
+    // A password prompt is then required before the dashboard is shown.
+    const ADMIN_PASSWORD = 'aldatu-pasahitza';
+
+    function isAdminUnlocked() {
+      return sessionStorage.getItem('huerta_admin_unlocked') === '1';
+    }
+
+    function requestAdminAccess() {
+      if (isAdminUnlocked()) return true;
+      const entered = window.prompt('Admin pasahitza / Contraseña de administración');
+      if (entered === null) return false;
+      if (entered === ADMIN_PASSWORD) {
+        sessionStorage.setItem('huerta_admin_unlocked', '1');
+        return true;
+      }
+      showToast('Pasahitz okerra / Contraseña incorrecta', 'info');
+      return false;
+    }
+
+    function configureAdminEntry() {
+      const params = new URLSearchParams(window.location.search);
+      const adminRequested = params.get('admin') === '1';
+      const btn = document.getElementById('viewToggleBtn');
+      if (adminRequested && btn) {
+        btn.classList.remove('hidden');
+        if (requestAdminAccess()) {
+          switchView('admin');
+        }
+      }
+    }
+
+    function setLanguage(lang) {
+      currentLang = lang;
+      localStorage.setItem('huerta_lang', lang);
+
+      const euBtn = document.getElementById('langEuBtn');
+      const esBtn = document.getElementById('langEsBtn');
+
+      if (lang === 'eu') {
+        euBtn.className = "px-2.5 py-1 rounded-lg bg-brand-700 text-white transition font-bold";
+        esBtn.className = "px-2.5 py-1 rounded-lg text-stone-600 hover:text-stone-900 transition font-medium";
+      } else {
+        esBtn.className = "px-2.5 py-1 rounded-lg bg-brand-700 text-white transition font-bold";
+        euBtn.className = "px-2.5 py-1 rounded-lg text-stone-600 hover:text-stone-900 transition font-medium";
+      }
+
+      updateStaticTexts();
+      renderCategories();
+      renderProducts();
+      renderCart();
+      populateContactSelectors();
+    }
+
+    function updateStaticTexts() {
+      const t = I18N[currentLang];
+      
+      const brandTitle = document.getElementById('headerBrandTitle');
+      if (brandTitle && brandTitle.childNodes[0]) {
+        brandTitle.childNodes[0].nodeValue = t.brandName + " ";
+      }
+      document.getElementById('headerFreshBadge').innerText = t.freshBadge;
+      document.getElementById('headerBrandSubtitle').innerText = t.brandSubtitle;
+
+      document.getElementById('viewToggleLabel').innerText = currentView === 'store' ? t.modeAdmin : t.modeStore;
+      document.getElementById('myCartLabel').innerText = t.myCart;
+      document.getElementById('heroBadge').innerText = t.heroBadge;
+      document.getElementById('heroTitle').innerText = t.heroTitle;
+      document.getElementById('heroDesc').innerHTML = t.heroDesc;
+      document.getElementById('heroMinOrder').innerText = t.noMinOrder;
+      document.getElementById('heroPickup').innerText = t.pickupDelivery;
+      document.getElementById('heroFreshness').innerText = t.freshnessGuarantee;
+      document.getElementById('searchInput').placeholder = t.searchPlaceholder;
+
+      document.getElementById('emptyStateTitle').innerText = t.emptyStateTitle;
+      document.getElementById('emptyStateDesc').innerText = t.emptyStateDesc;
+      document.getElementById('emptyStateBtn').innerText = t.emptyStateBtn;
+
+      document.getElementById('cartTitle').innerText = t.cartTitle;
+      document.getElementById('cartSubtitle').innerText = t.cartSubtitle;
+      document.getElementById('lblSubtotal').innerText = t.lblSubtotal;
+      document.getElementById('lblTotal').innerText = t.lblTotal;
+      document.getElementById('lblNoticePrice').innerText = t.lblNoticePrice;
+      document.getElementById('btnContinueCheckout').innerText = t.btnContinueCheckout;
+
+      document.getElementById('checkoutModalTitle').innerText = t.checkoutModalTitle;
+      document.getElementById('checkoutModalSubtitle').innerText = t.checkoutModalSubtitle;
+      document.getElementById('labelName').innerText = t.labelName;
+      document.getElementById('labelPhone').innerText = t.labelPhone;
+      document.getElementById('labelDelivery').innerText = t.labelDelivery;
+      document.getElementById('labelContactPerson').innerText = t.labelContactPerson;
+      document.getElementById('labelAddress').innerText = t.labelAddress;
+      document.getElementById('labelDate').innerText = t.labelDate;
+      document.getElementById('labelNotes').innerText = t.labelNotes;
+      document.getElementById('modalNoticeText').innerHTML = t.modalNotice;
+      document.getElementById('btnSubmitSystem').innerText = t.btnSubmitSystem;
+    }
+
+    function switchView(view) {
+      currentView = view;
+      const storeView = document.getElementById('storeView');
+      const adminView = document.getElementById('adminView');
+      const toggleLabel = document.getElementById('viewToggleLabel');
+
+      if (view === 'admin') {
+        storeView.classList.add('hidden');
+        adminView.classList.remove('hidden');
+        toggleLabel.innerText = I18N[currentLang].modeStore;
+        renderAdminOrders();
+        renderHarvestSummary();
+        renderAdminCatalog();
+      } else {
+        adminView.classList.add('hidden');
+        storeView.classList.remove('hidden');
+        toggleLabel.innerText = I18N[currentLang].modeAdmin;
+      }
+    }
+
+    function toggleAdminView() {
+      if (currentView === 'store') {
+        if (!requestAdminAccess()) return;
+        switchView('admin');
+      } else {
+        switchView('store');
+      }
+    }
+
+    function renderCategories() {
+      const container = document.getElementById('categoryContainer');
+      const cats = ['ALL', 'Verduras', 'Hortalizas', 'Frutas', 'Hierbas', 'Cestas'];
+      const catLabels = I18N[currentLang].categories;
+
+      container.innerHTML = cats.map(cat => {
+        const isActive = selectedCategory === cat;
+        const activeClass = isActive 
+          ? 'bg-brand-700 text-white shadow-sm' 
+          : 'bg-white text-stone-600 hover:bg-stone-100 border border-stone-200';
+        return `
+          <button onclick="selectCategory('${cat}')" 
+                  class="px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition ${activeClass}">
+            ${catLabels[cat] || cat}
+          </button>
+        `;
+      }).join('');
+    }
+
+    function selectCategory(cat) {
+      selectedCategory = cat;
+      renderCategories();
+      renderProducts();
+    }
+
+    function renderProducts() {
+      const grid = document.getElementById('productGrid');
+      const emptyState = document.getElementById('emptySearchState');
+      const query = (document.getElementById('searchInput').value || '').toLowerCase().trim();
+
+      const filtered = products.filter(p => {
+        const matchesCat = selectedCategory === 'ALL' || p.category === selectedCategory;
+        const matchesQuery = p.name.toLowerCase().includes(query);
+        return matchesCat && matchesQuery && p.available;
+      });
+
+      if (filtered.length === 0) {
+        grid.classList.add('hidden');
+        emptyState.classList.remove('hidden');
+        return;
+      }
+
+      grid.classList.remove('hidden');
+      emptyState.classList.add('hidden');
+
+      grid.innerHTML = filtered.map(prod => {
+        const currentQty = cart[prod.id] || 0;
+        const unitLabel = prod.unitType === 'kg' ? I18N[currentLang].kgUnit : I18N[currentLang].udUnit;
+
+        return `
+          <div class="bg-white rounded-2xl border border-stone-200/80 shadow-sm hover:shadow-md transition overflow-hidden flex flex-col justify-between group">
+            <div>
+              <div class="relative h-44 overflow-hidden bg-stone-100">
+                <img src="${prod.image}" alt="${prod.name}" 
+                     class="w-full h-full object-cover group-hover:scale-105 transition duration-300"
+                     onerror="this.src='https://placehold.co/600x400/22c55e/ffffff?text=Baratzea'">
+                <span class="absolute top-3 left-3 bg-white/90 backdrop-blur-md text-brand-800 text-[11px] font-bold px-2.5 py-0.5 rounded-full border border-brand-200 shadow-sm">
+                  ${prod.tag || prod.category}
+                </span>
+              </div>
+
+              <div class="p-4 space-y-2">
+                <h3 class="font-display font-bold text-stone-900 text-base leading-snug">${prod.name}</h3>
+                <div class="flex items-baseline gap-1">
+                  <span class="font-extrabold text-stone-900 text-xl">${prod.price.toFixed(2)} €</span>
+                  <span class="text-xs text-stone-500 font-medium">/ ${unitLabel}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="p-4 pt-0">
+              ${currentQty > 0 ? `
+                <div class="flex items-center justify-between bg-stone-100 rounded-xl p-1.5 border border-stone-200">
+                  <button onclick="changeQuantity('${prod.id}', -${prod.step})" class="w-8 h-8 rounded-lg bg-white text-stone-700 flex items-center justify-center font-bold shadow-sm hover:bg-stone-50">
+                    <i data-lucide="minus" class="w-4 h-4"></i>
+                  </button>
+                  <span class="font-extrabold text-stone-800 text-sm">${currentQty} ${unitLabel}</span>
+                  <button onclick="changeQuantity('${prod.id}', ${prod.step})" class="w-8 h-8 rounded-lg bg-white text-stone-700 flex items-center justify-center font-bold shadow-sm hover:bg-stone-50">
+                    <i data-lucide="plus" class="w-4 h-4"></i>
+                  </button>
+                </div>
+              ` : `
+                <button onclick="changeQuantity('${prod.id}', ${prod.min || prod.step})" class="w-full py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs rounded-xl shadow-sm transition flex items-center justify-center gap-1.5">
+                  <i data-lucide="plus" class="w-4 h-4"></i>
+                  <span>${I18N[currentLang].addBtn}</span>
+                </button>
+              `}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      lucide.createIcons();
+    }
+
+    function filterProducts() {
+      renderProducts();
+    }
+
+    function resetSearch() {
+      document.getElementById('searchInput').value = '';
+      selectedCategory = 'ALL';
+      renderCategories();
+      renderProducts();
+    }
+
+    function changeQuantity(prodId, delta) {
+      const prod = products.find(p => p.id === prodId);
+      if (!prod) return;
+
+      const current = cart[prodId] || 0;
+      let next = Math.round((current + delta) * 10) / 10;
+
+      if (next <= 0) {
+        delete cart[prodId];
+      } else {
+        cart[prodId] = next;
+      }
+
+      renderProducts();
+      renderCart();
+    }
+
+    function renderCart() {
+      const cartCount = document.getElementById('cartCountBadge');
+      const itemsContainer = document.getElementById('cartItemsContainer');
+      const cartSubtotal = document.getElementById('cartSubtotal');
+      const cartTotal = document.getElementById('cartTotal');
+
+      const cartKeys = Object.keys(cart);
+      const totalCount = cartKeys.reduce((acc, key) => acc + (cart[key] > 0 ? 1 : 0), 0);
+      cartCount.innerText = totalCount;
+
+      if (cartKeys.length === 0) {
+        itemsContainer.innerHTML = `
+          <div class="text-center py-12 text-stone-400 space-y-2">
+            <i data-lucide="shopping-basket" class="w-12 h-12 mx-auto stroke-1"></i>
+            <p class="text-sm font-medium">Zure saskia hutsik dago / Tu cesta está vacía</p>
+          </div>
+        `;
+        cartSubtotal.innerText = '0.00 €';
+        cartTotal.innerText = '0.00 €';
+        lucide.createIcons();
+        return;
+      }
+
+      let subtotal = 0;
+      itemsContainer.innerHTML = cartKeys.map(id => {
+        const p = products.find(prod => prod.id === id);
+        if (!p) return '';
+        const qty = cart[id];
+        const lineTotal = qty * p.price;
+        subtotal += lineTotal;
+        const unitLabel = p.unitType === 'kg' ? I18N[currentLang].kgUnit : I18N[currentLang].udUnit;
+
+        return `
+          <div class="flex items-center justify-between py-3">
+            <div class="space-y-0.5">
+              <div class="font-bold text-stone-800 text-sm">${p.name}</div>
+              <div class="text-xs text-stone-500">${p.price.toFixed(2)} € / ${unitLabel}</div>
+            </div>
+
+            <div class="flex items-center gap-3">
+              <div class="flex items-center bg-stone-100 rounded-lg p-1 border border-stone-200">
+                <button onclick="changeQuantity('${p.id}', -${p.step})" class="w-6 h-6 rounded bg-white text-stone-700 flex items-center justify-center font-bold text-xs">
+                  <i data-lucide="minus" class="w-3 h-3"></i>
+                </button>
+                <span class="px-2 text-xs font-bold text-stone-800">${qty} ${unitLabel}</span>
+                <button onclick="changeQuantity('${p.id}', ${p.step})" class="w-6 h-6 rounded bg-white text-stone-700 flex items-center justify-center font-bold text-xs">
+                  <i data-lucide="plus" class="w-3 h-3"></i>
+                </button>
+              </div>
+              <span class="font-bold text-stone-900 text-sm min-w-[50px] text-right">${lineTotal.toFixed(2)} €</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      cartSubtotal.innerText = subtotal.toFixed(2) + ' €';
+      cartTotal.innerText = subtotal.toFixed(2) + ' €';
+      lucide.createIcons();
+    }
+
+    function openCartModal() {
+      document.getElementById('cartModal').classList.remove('hidden');
+    }
+
+    function closeCartModal() {
+      document.getElementById('cartModal').classList.add('hidden');
+    }
+
+    function openCheckoutForm() {
+      if (Object.keys(cart).length === 0) {
+        showToast('Saskia hutsik dago! / Cesta vacía', 'info');
+        return;
+      }
+      closeCartModal();
+      document.getElementById('checkoutModal').classList.remove('hidden');
+    }
+
+    function closeCheckoutModal() {
+      document.getElementById('checkoutModal').classList.add('hidden');
+    }
+
+    function toggleDeliveryAddressField() {
+      const method = document.getElementById('deliveryMethod').value;
+      const addrGroup = document.getElementById('addressFieldGroup');
+      if (method === 'Entrega en Mano') {
+        addrGroup.classList.remove('hidden');
+      } else {
+        addrGroup.classList.add('hidden');
+      }
+    }
+
+    function populateContactSelectors() {
+      const formSelect = document.getElementById('contactPerson');
+      const filterSelect = document.getElementById('adminContactFilter');
+
+      const optionsHtml = contacts.map(c => `<option value="${c.name}">${c.name} (${c.zone})</option>`).join('');
+      if (formSelect) formSelect.innerHTML = optionsHtml;
+      if (filterSelect) {
+        filterSelect.innerHTML = `<option value="ALL">Pertsona guztiak / Todos</option>` + 
+          contacts.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
+      }
+    }
+
+    function switchAdminTab(tab) {
+      currentAdminTab = tab;
+      const ordersTab = document.getElementById('adminOrdersTab');
+      const harvestTab = document.getElementById('adminHarvestTab');
+      const catalogTab = document.getElementById('adminCatalogTab');
+
+      const btnOrders = document.getElementById('tabBtnOrders');
+      const btnHarvest = document.getElementById('tabBtnHarvest');
+      const btnCatalog = document.getElementById('tabBtnCatalog');
+
+      ordersTab.classList.add('hidden');
+      harvestTab.classList.add('hidden');
+      catalogTab.classList.add('hidden');
+
+      btnOrders.className = "pb-3 border-b-2 border-transparent text-stone-500 hover:text-stone-800 flex items-center gap-2 font-medium";
+      btnHarvest.className = "pb-3 border-b-2 border-transparent text-stone-500 hover:text-stone-800 flex items-center gap-2 font-medium";
+      btnCatalog.className = "pb-3 border-b-2 border-transparent text-stone-500 hover:text-stone-800 flex items-center gap-2 font-medium";
+
+      if (tab === 'orders') {
+        ordersTab.classList.remove('hidden');
+        btnOrders.className = "pb-3 border-b-2 border-brand-600 text-brand-700 font-bold flex items-center gap-2";
+        renderAdminOrders();
+      } else if (tab === 'harvest') {
+        harvestTab.classList.remove('hidden');
+        btnHarvest.className = "pb-3 border-b-2 border-brand-600 text-brand-700 font-bold flex items-center gap-2";
+        renderHarvestSummary();
+      } else if (tab === 'catalog') {
+        catalogTab.classList.remove('hidden');
+        btnCatalog.className = "pb-3 border-b-2 border-brand-600 text-brand-700 font-bold flex items-center gap-2";
+        renderAdminCatalog();
+      }
+    }
+
+    function renderHarvestSummary() {
+      const container = document.getElementById('harvestSummaryList');
+      const activeOrders = orders.filter(o => o.status === 'Pendiente' || o.status === 'Preparando');
+
+      if (activeOrders.length === 0) {
+        container.innerHTML = `
+          <div class="py-8 text-center text-stone-400">
+            <i data-lucide="sprout" class="w-8 h-8 mx-auto mb-1 stroke-1"></i>
+            <p class="text-sm">Ez dago uzta biltzeko eskaera aktiborik.</p>
+          </div>
+        `;
+        lucide.createIcons();
+        return;
+      }
+
+      const totals = {}; // { itemKey: { name, qty, unitType } }
+      activeOrders.forEach(ord => {
+        ord.items.forEach(item => {
+          const key = item.name;
+          if (!totals[key]) {
+            totals[key] = { name: item.name, qty: 0, unitType: item.unitType || 'ud' };
+          }
+          totals[key].qty += Number(item.qty) || 0;
+        });
+      });
+
+      container.innerHTML = Object.values(totals).map(item => `
+        <div class="py-3 flex items-center justify-between">
+          <span class="font-medium text-stone-800 text-sm">${item.name}</span>
+          <span class="font-extrabold text-brand-800 text-base bg-brand-50 px-3 py-1 rounded-lg border border-brand-200">
+            ${item.qty.toFixed(item.unitType === 'kg' ? 1 : 0)} ${item.unitType}
+          </span>
+        </div>
+      `).join('');
+
+      lucide.createIcons();
+    }
+
+    function renderAdminCatalog() {
+      const tbody = document.getElementById('adminCatalogTable');
+      tbody.innerHTML = products.map(prod => `
+        <tr class="hover:bg-stone-50 border-b border-stone-100">
+          <td class="p-3.5 font-bold text-stone-900">${prod.name}</td>
+          <td class="p-3.5 text-stone-600">${prod.category}</td>
+          <td class="p-3.5 font-bold text-stone-800">${prod.price.toFixed(2)} €</td>
+          <td class="p-3.5 text-stone-600">${prod.unitType}</td>
+          <td class="p-3.5">
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold ${prod.available ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">
+              ${prod.available ? 'Eskuragarri / Disponible' : 'Agotado'}
+            </span>
+          </td>
+          <td class="p-3.5 text-right space-x-2">
+            <button onclick="toggleProductAvailability('${prod.id}')" class="px-2.5 py-1 text-xs font-bold rounded-lg border border-stone-300 hover:bg-stone-100">
+              ${prod.available ? 'Agotatu' : 'Gaitu'}
+            </button>
+            <button onclick="deleteProduct('${prod.id}')" class="px-2.5 py-1 text-xs font-bold text-rose-600 rounded-lg border border-rose-200 hover:bg-rose-50">
+              Ezabatu
+            </button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function toggleProductAvailability(id) {
+      const p = products.find(prod => prod.id === id);
+      if (p) {
+        p.available = !p.available;
+        saveProductsState();
+        renderAdminCatalog();
+        renderProducts();
+      }
+    }
+
+    function deleteProduct(id) {
+      products = products.filter(p => p.id !== id);
+      saveProductsState();
+      renderAdminCatalog();
+      renderProducts();
+    }
+
+    function openAddProductModal() {
+      document.getElementById('addProductModal').classList.remove('hidden');
+    }
+
+    function closeAddProductModal() {
+      document.getElementById('addProductModal').classList.add('hidden');
+    }
+
+    function handleAddProductSubmit(e) {
+      e.preventDefault();
+      const name = document.getElementById('newProdName').value.trim();
+      const category = document.getElementById('newProdCategory').value;
+      const unitType = document.getElementById('newProdUnitType').value;
+      const price = parseFloat(document.getElementById('newProdPrice').value);
+      const step = parseFloat(document.getElementById('newProdStep').value);
+      const image = document.getElementById('newProdImage').value.trim();
+
+      const newProd = {
+        id: 'p-' + Date.now(),
+        name,
+        category,
+        unitType,
+        price,
+        step: step || 0.5,
+        min: step || 0.5,
+        available: true,
+        tag: 'Berria / Nuevo',
+        image: image || 'https://images.unsplash.com/photo-1590165482129-1b8b27698780?auto=format&fit=crop&w=600&q=80'
+      };
+
+      products.push(newProd);
+      saveProductsState();
+      closeAddProductModal();
+      document.getElementById('addProductForm').reset();
+      renderProducts();
+      renderAdminCatalog();
+      showToast('Produktua gehituta! / Producto añadido', 'success');
+    }
+
+    function exportOrdersJSON() {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(orders, null, 2));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", `eskaerak_${new Date().toISOString().split('T')[0]}.json`);
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+    }
+
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      const bg = type === 'success' ? 'bg-emerald-800' : 'bg-stone-900';
+      toast.className = `${bg} text-white text-xs font-semibold px-4 py-3 rounded-xl shadow-xl flex items-center gap-2 transform transition-all duration-300 pointer-events-auto`;
+      toast.innerHTML = `<i data-lucide="info" class="w-4 h-4 text-amber-400"></i> <span>${message}</span>`;
+      container.appendChild(toast);
+      lucide.createIcons();
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
+    }
+
+    function saveOrdersState() {
+      localStorage.setItem('huerta_orders', JSON.stringify(orders));
+    }
+
+    function saveProductsState() {
+      localStorage.setItem('huerta_products', JSON.stringify(products));
+    }
+
+    function openSheetsConfigModal() {
+      document.getElementById('sheetsConfigModal').classList.remove('hidden');
+      document.getElementById('googleScriptUrlInput').value = googleScriptUrl;
+      const statusText = document.getElementById('sheetsConfigStatus');
+      if (googleScriptUrl) {
+        statusText.innerText = "✅ URLa konfiguratuta dago / URL configurada";
+        statusText.className = "text-emerald-700 font-bold";
+      } else {
+        statusText.innerText = "⚠️ Ez da URLa konfiguratu beraz / Sin URL configurada";
+        statusText.className = "text-amber-700 font-bold";
+      }
+    }
+
+    function closeSheetsConfigModal() {
+      document.getElementById('sheetsConfigModal').classList.add('hidden');
+    }
+
+    function saveGoogleSheetsUrl() {
+      const url = document.getElementById('googleScriptUrlInput').value.trim();
+      googleScriptUrl = url;
+      localStorage.setItem('huerta_script_url', url);
+      closeSheetsConfigModal();
+      showToast('Google Sheets URL gorde da! / URL guardada', 'success');
+      if (url) {
+        fetchOrdersFromGoogleSheets();
+      }
+    }
+
+    async function handleOrderSubmit(e) {
+      if (e) e.preventDefault();
+
+      const name = document.getElementById('customerName').value.trim();
+      const phone = document.getElementById('customerPhone').value.trim();
+      const method = document.getElementById('deliveryMethod').value;
+      const contactPerson = document.getElementById('contactPerson').value;
+      const address = document.getElementById('customerAddress').value.trim();
+      const date = document.getElementById('deliveryDate').value;
+      const notes = document.getElementById('customerNotes').value.trim();
+
+      if (!name || !phone) {
+        showToast('Bete izen-abizenak eta telefonoa / Rellena nombre y teléfono', 'info');
+        return;
+      }
+
+      const submitBtn = document.getElementById('btnSubmitOrder');
+      submitBtn.disabled = true;
+      submitBtn.classList.add('opacity-75');
+      document.getElementById('btnSubmitSystem').innerText = 'Gordetzen... / Guardando...';
+
+      const orderItems = Object.keys(cart).map(id => {
+        const p = products.find(prod => prod.id === id);
+        return {
+          id: p.id,
+          name: p.name,
+          qty: cart[id],
+          unitType: p.unitType,
+          price: p.price
+        };
+      });
+
+      const totalAmount = orderItems.reduce((sum, item) => sum + (item.qty * item.price), 0);
+
+      const newOrder = {
+        id: 'PED-' + Math.floor(1000 + Math.random() * 9000),
+        customerName: name,
+        phone: phone,
+        deliveryMethod: method,
+        contactPerson: contactPerson,
+        address: method === 'Entrega en Mano' ? address : 'N/A (Finkan Jaso / Recogida)',
+        deliveryDate: date,
+        notes: notes || '-',
+        status: 'Pendiente',
+        createdAt: new Date().toLocaleString('es-ES'),
+        items: orderItems,
+        total: totalAmount
+      };
+
+      // Add to local state
+      orders.unshift(newOrder);
+      saveOrdersState();
+
+      // If Google Sheets API URL is available, send directly to Google Sheets
+      if (googleScriptUrl) {
+        try {
+          await fetch(googleScriptUrl, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              action: 'createOrder',
+              order: newOrder
+            })
+          });
+        } catch (err) {
+          console.warn("Google Sheets connection error, saved locally:", err);
+        }
+      }
+
+      // Reset cart and UI
+      cart = {};
+      renderProducts();
+      renderCart();
+      renderAdminOrders();
+
+      closeCheckoutModal();
+
+      // Reset Submit Button
+      submitBtn.disabled = false;
+      submitBtn.classList.remove('opacity-75');
+      document.getElementById('btnSubmitSystem').innerText = I18N[currentLang].btnSubmitSystem;
+
+      // Show confirmation dialog
+      openSuccessModal(newOrder);
+    }
+
+    function openSuccessModal(order) {
+      const modal = document.getElementById('orderSuccessModal');
+      const details = document.getElementById('successOrderDetails');
+      
+      let itemsList = order.items.map(i => `• ${i.name}: ${i.qty} ${i.unitType}`).join('<br>');
+      
+      details.innerHTML = `
+        <div><strong>Kodea:</strong> ${order.id}</div>
+        <div><strong>Bezeroa:</strong> ${order.customerName} (${order.phone})</div>
+        <div><strong>Banaketa:</strong> ${order.deliveryMethod}</div>
+        <div><strong>Harreman Pertsona:</strong> ${order.contactPerson}</div>
+        <div><strong>Eguna:</strong> ${order.deliveryDate}</div>
+        <div class="pt-1 border-t border-stone-200"><strong>Produktuak:</strong><br>${itemsList}</div>
+        <div class="font-bold text-brand-800 text-sm pt-1">Guztira: ~${order.total.toFixed(2)} €</div>
+      `;
+
+      modal.classList.remove('hidden');
+    }
+
+    function closeSuccessModal() {
+      document.getElementById('orderSuccessModal').classList.add('hidden');
+    }
+
+    async function fetchOrdersFromGoogleSheets() {
+      if (!googleScriptUrl) {
+        showToast('Sartu Google Sheets URLa lehenengo / Configura la URL', 'info');
+        openSheetsConfigModal();
+        return;
+      }
+
+      const syncIcon = document.getElementById('syncIcon');
+      if (syncIcon) syncIcon.classList.add('animate-spin');
+
+      try {
+        const resp = await fetch(googleScriptUrl);
+        const data = await resp.json();
+
+        if (data && data.orders && Array.isArray(data.orders)) {
+          orders = data.orders;
+          saveOrdersState();
+          renderAdminOrders();
+          renderHarvestSummary();
+          showToast(`Sincronizado: ${orders.length} pedidos`, 'success');
+        } else {
+          showToast('Respuesta vacía de Google Sheets', 'info');
+        }
+      } catch (err) {
+        console.error("Error fetching from Google Sheets:", err);
+        showToast('Errorea Google Sheets-ekin konektatzean', 'error');
+      } finally {
+        if (syncIcon) syncIcon.classList.remove('animate-spin');
+      }
+    }
+
+    function renderAdminOrders() {
+      const container = document.getElementById('adminOrdersList');
+      const statusFilter = document.getElementById('adminStatusFilter').value;
+      const contactFilter = document.getElementById('adminContactFilter').value;
+      const pendingBadge = document.getElementById('adminPendingCount');
+
+      const pendingCount = orders.filter(o => o.status === 'Pendiente').length;
+      if (pendingBadge) pendingBadge.innerText = pendingCount;
+
+      const filteredOrders = orders.filter(o => {
+        const matchesStatus = statusFilter === 'ALL' || o.status === statusFilter;
+        const matchesContact = contactFilter === 'ALL' || o.contactPerson === contactFilter;
+        return matchesStatus && matchesContact;
+      });
+
+      document.getElementById('ordersSummaryText').innerText = `${filteredOrders.length} eskaera erakusten`;
+
+      if (filteredOrders.length === 0) {
+        container.innerHTML = `
+          <div class="bg-white p-8 rounded-2xl border border-stone-200 text-center text-stone-500">
+            <i data-lucide="check-circle-2" class="w-10 h-10 mx-auto text-stone-300 mb-2"></i>
+            <p class="font-medium">Ez dago eskaerarik iragazki honekin.</p>
+          </div>
+        `;
+        lucide.createIcons();
+        return;
+      }
+
+      container.innerHTML = filteredOrders.map(order => {
+        const statusColors = {
+          'Pendiente': 'bg-amber-100 text-amber-800 border-amber-300',
+          'Preparando': 'bg-blue-100 text-blue-800 border-blue-300',
+          'Listo': 'bg-emerald-100 text-emerald-800 border-emerald-300',
+          'Completado': 'bg-stone-100 text-stone-600 border-stone-300'
+        };
+
+        return `
+          <div class="bg-white rounded-2xl border border-stone-200 shadow-sm overflow-hidden p-5 space-y-4">
+            
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-stone-100">
+              <div class="flex items-center gap-3">
+                <span class="font-display font-extrabold text-stone-900 text-lg">${order.id}</span>
+                <span class="text-xs text-stone-400">• ${order.createdAt}</span>
+              </div>
+
+              <div class="flex items-center gap-2">
+                <span class="text-xs text-stone-500 font-medium">Egoera:</span>
+                <select onchange="updateOrderStatus('${order.id}', this.value)" 
+                        class="text-xs font-bold px-3 py-1.5 rounded-full border ${statusColors[order.status]} focus:outline-none cursor-pointer">
+                  <option value="Pendiente" ${order.status === 'Pendiente' ? 'selected' : ''}>⏳ Zazpitan / Pendiente</option>
+                  <option value="Preparando" ${order.status === 'Preparando' ? 'selected' : ''}>🚜 Prestatzen / Preparando</option>
+                  <option value="Listo" ${order.status === 'Listo' ? 'selected' : ''}>✅ Prest / Listo</option>
+                  <option value="Completado" ${order.status === 'Completado' ? 'selected' : ''}>📦 Eginda / Completado</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 text-sm">
+              <div class="bg-stone-50 p-3.5 rounded-xl border border-stone-200/60 space-y-1.5">
+                <div class="font-bold text-stone-900 flex items-center gap-1.5">
+                  <i data-lucide="user" class="w-4 h-4 text-stone-500"></i> ${order.customerName}
+                </div>
+                <div class="text-xs text-stone-600 flex items-center gap-1.5">
+                  <i data-lucide="phone" class="w-3.5 h-3.5 text-stone-400"></i> ${order.phone}
+                </div>
+                <div class="text-xs text-stone-600 flex items-center gap-1.5">
+                  <i data-lucide="truck" class="w-3.5 h-3.5 text-stone-400"></i> ${order.deliveryMethod}
+                </div>
+                <div class="text-xs font-semibold text-brand-800 flex items-center gap-1.5 bg-brand-50 p-1.5 rounded-md border border-brand-200">
+                  <i data-lucide="user-check" class="w-3.5 h-3.5 text-brand-600"></i> Harreman: ${order.contactPerson || 'Guztiak'}
+                </div>
+                ${order.address && order.address !== 'N/A (Finkan Jaso / Recogida)' ? `<div class="text-xs text-stone-600 flex items-start gap-1.5"><i data-lucide="map-pin" class="w-3.5 h-3.5 text-stone-400 mt-0.5"></i> ${order.address}</div>` : ''}
+                <div class="text-xs text-stone-600 flex items-center gap-1.5">
+                  <i data-lucide="calendar" class="w-3.5 h-3.5 text-stone-400"></i> Eguna: <span class="font-semibold text-stone-800">${order.deliveryDate}</span>
+                </div>
+                ${order.notes && order.notes !== '-' ? `<div class="text-xs text-amber-800 bg-amber-50 p-2 rounded-lg border border-amber-200 mt-1"><strong>Oharra:</strong> ${order.notes}</div>` : ''}
+              </div>
+
+              <div class="lg:col-span-2 space-y-2">
+                <div class="text-xs font-bold text-stone-500 uppercase tracking-wider flex justify-between">
+                  <span>Produktuak:</span>
+                  <span>Total Est.: ${order.total.toFixed(2)} €</span>
+                </div>
+
+                <div class="space-y-1.5">
+                  ${order.items.map(item => `
+                    <label class="flex items-center justify-between p-2 rounded-lg hover:bg-stone-50 border border-stone-100 transition cursor-pointer">
+                      <div class="flex items-center gap-2.5">
+                        <input type="checkbox" class="w-4 h-4 text-brand-600 rounded border-stone-300 focus:ring-brand-500">
+                        <span class="font-medium text-stone-800 text-sm">${item.name}</span>
+                      </div>
+                      <span class="font-bold text-brand-800 text-sm px-2 py-0.5 bg-brand-50 rounded-md border border-brand-200">
+                        ${item.qty} ${item.unitType}
+                      </span>
+                    </label>
+                  `).join('')}
+                </div>
+
+                <div class="flex justify-end gap-2 pt-2">
+                  <button onclick="deleteOrder('${order.id}')" class="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs font-bold rounded-lg border border-rose-200 transition">
+                    Ezabatu / Eliminar
+                  </button>
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+        `;
+      }).join('');
+
+      lucide.createIcons();
+    }
+
+    async function updateOrderStatus(orderId, newStatus) {
+      const order = orders.find(o => o.id === orderId);
+      if (order) {
+        order.status = newStatus;
+        saveOrdersState();
+        renderAdminOrders();
+
+        if (googleScriptUrl) {
+          try {
+            await fetch(googleScriptUrl, {
+              method: 'POST',
+              mode: 'no-cors',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                action: 'updateStatus',
+                orderId: orderId,
+                status: newStatus
+              })
+            });
+          } catch (e) {
+            console.warn("Could not sync status to Google Sheets:", e);
+          }
+        }
+        showToast(`Pedido ${orderId} -> ${newStatus}`);
+      }
+    }
+
+    function deleteOrder(orderId) {
+      orders = orders.filter(o => o.id !== orderId);
+      saveOrdersState();
+      renderAdminOrders();
+      showToast(`Pedido ${orderId} eliminado`);
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+      setLanguage(currentLang);
+      renderCategories();
+      renderProducts();
+      renderCart();
+      populateContactSelectors();
+      
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      const deliveryInput = document.getElementById('deliveryDate');
+      if (deliveryInput) {
+        deliveryInput.value = tomorrow.toISOString().split('T')[0];
+      }
+
+      if (googleScriptUrl) {
+        fetchOrdersFromGoogleSheets();
+      }
+    });
+  
+
+    document.addEventListener('DOMContentLoaded', () => {
+      configureAdminEntry();
+    });
+</script>
+</body>
+</html>
