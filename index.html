@@ -1597,8 +1597,8 @@
           showToast('Irudi fitxategi bat aukeratu / Selecciona un archivo de imagen', 'error');
           return;
         }
-        if (imageFile.size > 3 * 1024 * 1024) {
-          showToast('Irudia handiegia da (gehienez 3 MB) / Imagen demasiado grande (máx. 3 MB)', 'error');
+        if (imageFile.size > 5 * 1024 * 1024) {
+          showToast('Irudia handiegia da (gehienez 5 MB) / Imagen demasiado grande (máx. 5 MB)', 'error');
           return;
         }
         try {
