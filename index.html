@@ -1183,31 +1183,17 @@
       submitBtn.disabled = true;
 
       const orderItems = Object.keys(cart).map(id => {
-  const product = products.find(p => p.id === id);
+        const product = products.find(p => p.id === id);
+        return {
+          id: product ? product.id : id,
+          name: product ? product.name : 'Produktua',
+          qty: cart[id],
+          unitType: product ? (product.unitType || 'ud') : 'ud',
+          price: product ? product.price : 0
+        };
+      });
 
-  return {
-    id: product ? product.id : id,
-    name: product ? product.name : 'Produktua',
-    qty: cart[id],
-
-    unitType: product ? (product.unitType || 'ud') : 'ud',
-    price: product ? Number(product.price) : 0,
-
-    priceType: product ? (product.priceType || product.unitType || 'ud') : 'ud',
-    packSize: product ? (Number(product.packSize) || 1) : 1,
-    packUnit: product ? (product.packUnit || product.unitType || 'ud') : 'ud'
-  };
-});
-
-      const totalAmount = orderItems.reduce((sum, item) => {
-
-  if (item.priceType === 'lote') {
-    return sum + (item.qty / item.packSize) * item.price;
-  }
-
-  return sum + item.qty * item.price;
-
-}, 0);
+      const totalAmount = orderItems.reduce((sum, item) => sum + (item.qty * item.price), 0);
       const newOrderId = 'ESK-' + Date.now().toString().slice(-6);
 
       const newOrder = {
@@ -1308,6 +1294,7 @@
       }
     }
 
+    function openAddProductModal() { document.getElementById('addProductModal').classList.remove('hidden'); }
     function closeAddProductModal() { document.getElementById('addProductModal').classList.add('hidden'); }
 
     function toggleLoteFields() {
@@ -1352,7 +1339,7 @@ async function handleAddProductSubmit(e) {
   const category = document.getElementById('newProdCategory').value;
   const priceType = document.getElementById('newProdPriceType').value;
   const price = parseFloat(document.getElementById('newProdPrice').value);
-  let step = parseFloat(document.getElementById('newProdStep').value);
+  const step = parseFloat(document.getElementById('newProdStep').value);
   const image = document.getElementById('newProdImage').value.trim();
 
   let packSize = 1;
@@ -1568,34 +1555,11 @@ async function handleAddProductSubmit(e) {
       // Recalcula el total del pedido con los kilos reales
       let newTotal = 0;
       order.items.forEach(item => {
-
-  if (item.unitType === 'kg') {
-
-    const finalQty =
-      item.realWeight !== null &&
-      item.realWeight !== undefined
-        ? Number(item.realWeight)
-        : Number(item.qty);
-
-    newTotal += finalQty * Number(item.price);
-
-  } else if (item.priceType === 'lote') {
-
-    const packSize = Number(item.packSize) || 1;
-
-    newTotal +=
-      (Number(item.qty) / packSize) *
-      Number(item.price);
-
-  } else {
-
-    newTotal +=
-      Number(item.qty) *
-      Number(item.price);
-
-  }
-
-});
+        const finalQty = (item.unitType === 'kg' && item.realWeight !== null && item.realWeight !== undefined) 
+          ? item.realWeight 
+          : item.qty;
+        newTotal += finalQty * item.price;
+      });
 
       order.total = newTotal;
 
@@ -1629,3 +1593,4 @@ async function handleAddProductSubmit(e) {
   </script>
 </body>
 </html>
+
