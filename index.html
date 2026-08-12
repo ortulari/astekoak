@@ -375,7 +375,6 @@
         <div>
           <h3 class="font-display font-bold text-lg" id="checkoutModalTitle">Eskaera Prestatzeko Datuak</h3>
           <p class="text-xs text-brand-200" id="checkoutModalSubtitle">Esaguzu nora eta noiz banatu behar dizugun</p>
-          pricePending: "Konfirmatu beharrekoa (pisuaren arabera)"
         </div>
         <button onclick="closeCheckoutModal()" class="text-brand-200 hover:text-white">
           <i data-lucide="x" class="w-6 h-6"></i>
@@ -613,7 +612,6 @@
         btnContinueCheckout: "Jarraitu Datuen Betetzerantz",
         checkoutModalTitle: "Eskaera Prestatzeko Datuak",
         checkoutModalSubtitle: "Esaguzu nora eta noiz banatu behar dizugun"
-        pricePending: "A confirmar según peso"
       },
       es: {
         brandName: "Huerta Del Rancho",
@@ -1090,103 +1088,64 @@
     }
 
     function renderCart() {
-  const container = document.getElementById('cartItemsContainer');
-  const countBadge = document.getElementById('cartCountBadge');
-  const subtotalEl = document.getElementById('cartSubtotal');
-  const totalEl = document.getElementById('cartTotal');
-  const t = I18N[currentLang];
+      const cartCount = document.getElementById('cartCountBadge');
+      const itemsContainer = document.getElementById('cartItemsContainer');
+      const cartSubtotal = document.getElementById('cartSubtotal');
+      const cartTotal = document.getElementById('cartTotal');
 
-  container.innerHTML = '';
+      const cartKeys = Object.keys(cart);
+      const totalCount = cartKeys.reduce((acc, key) => acc + (cart[key] > 0 ? 1 : 0), 0);
+      cartCount.innerText = totalCount;
 
-  let fixedSum = 0;                 // suma solo de productos con precio fijo (ud/lote)
-  let itemsCount = 0;
-  let hasVariableWeight = false;    // si hay algún producto vendido por peso
-
-  for (const prodId of Object.keys(cart)) {
-    const qty = cart[prodId];
-    const p = products.find(x => x.id === prodId);
-    if (!p) continue;
-    itemsCount += 1;
-
-    // compatibilidad: algunos objetos antiguos usan unitType, los nuevos usan orderUnit
-    const orderUnit = p.orderUnit || p.unitType || 'ud';
-    const priceType = p.priceType || ''; // por si el backend usa priceType para indicar 'by_weight'
-
-    // etiqueta de precio por unidad (ej: "2.80 €/kg" o "14.50 €/ud")
-    const pricePerUnitLabel = (typeof p.price === 'number') ? `${p.price.toFixed(2)} €/${orderUnit}` : '';
-
-    let lineRightHtml = '';
-    // Determinar si es producto vendido por peso (variable) -> no calcular importe final
-    const isByWeight = orderUnit === 'kg' || priceType === 'by_weight' || priceType === 'kg';
-
-    if (isByWeight) {
-      hasVariableWeight = true;
-      // Mostrar nota en vez de importe: "A confirmar según peso"
-      lineRightHtml = `<div class="text-xs text-stone-500">${t.pricePending}</div>`;
-    } else {
-      // precio fijo por unidad/lote -> se puede calcular
-      const lineTotal = (p.price || 0) * qty;
-      fixedSum += lineTotal;
-      lineRightHtml = `<div class="text-sm font-bold">${lineTotal.toFixed(2)} €</div>`;
-    }
-
-    container.insertAdjacentHTML('beforeend', `
-      <div class="py-2 flex items-center gap-3">
-        <div class="w-12 h-12 rounded-lg overflow-hidden bg-stone-100 flex items-center justify-center">
-          ${p.image ? `<img src="${p.image}" alt="${escapeHtml(p.name)}" class="w-full h-full object-cover">` : `<i data-lucide="image" class="w-6 h-6 text-stone-300"></i>`}
-        </div>
-        <div class="flex-1 min-w-0">
-          <div class="font-medium truncate">${escapeHtml(p.name)}</div>
-          <div class="text-xs text-stone-500">
-            ${qty} × ${orderUnit} · ${pricePerUnitLabel}
+      if (cartKeys.length === 0) {
+        itemsContainer.innerHTML = `
+          <div class="text-center py-12 text-stone-400 space-y-2">
+            <i data-lucide="shopping-basket" class="w-12 h-12 mx-auto stroke-1"></i>
+            <p class="text-sm font-medium">Zure saskia hutsik dago / Tu cesta está vacía</p>
           </div>
-        </div>
-        <div class="text-right">
-          ${lineRightHtml}
-        </div>
-      </div>
-    `);
-  }
+        `;
+        cartSubtotal.innerText = '0.00 €';
+        cartTotal.innerText = '0.00 €';
+        lucide.createIcons();
+        return;
+      }
 
-  // Actualizar contador del badge
-  countBadge.innerText = itemsCount;
+      let subtotal = 0;
+      itemsContainer.innerHTML = cartKeys.map(id => {
+        const p = products.find(prod => prod.id === id);
+        if (!p) return '';
+        const qty = cart[id];
+        const lineTotal = qty * p.price;
+        subtotal += lineTotal;
+        const unitLabel = p.unitType === 'kg' ? I18N[currentLang].kgUnit : I18N[currentLang].udUnit;
 
-  // Subtotal (solo suma de precios fijos)
-  subtotalEl.innerText = fixedSum.toFixed(2) + ' €';
+        return `
+          <div class="flex items-center justify-between py-3">
+            <div class="space-y-0.5">
+              <div class="font-bold text-stone-800 text-sm">${p.name}</div>
+              <div class="text-xs text-stone-500">${p.price.toFixed(2)} € / ${unitLabel}</div>
+            </div>
 
-  // Total: si hay productos por pesar, añadimos la nota
-  if (hasVariableWeight) {
-    totalEl.innerText = `${fixedSum.toFixed(2)} € + ${t.pricePending}`;
-  } else {
-    totalEl.innerText = `${fixedSum.toFixed(2)} €`;
-  }
+            <div class="flex items-center gap-3">
+              <div class="flex items-center bg-stone-100 rounded-lg p-1 border border-stone-200">
+                <button onclick="changeQuantity('${p.id}', -${p.step})" class="w-6 h-6 rounded bg-white text-stone-700 flex items-center justify-center font-bold text-xs">
+                  <i data-lucide="minus" class="w-3 h-3"></i>
+                </button>
+                <span class="px-2 text-xs font-bold text-stone-800">${qty} ${unitLabel}</span>
+                <button onclick="changeQuantity('${p.id}', ${p.step})" class="w-6 h-6 rounded bg-white text-stone-700 flex items-center justify-center font-bold text-xs">
+                  <i data-lucide="plus" class="w-3 h-3"></i>
+                </button>
+              </div>
+              <span class="font-bold text-stone-900 text-sm min-w-[50px] text-right">${lineTotal.toFixed(2)} €</span>
+            </div>
+          </div>
+        `;
+      }).join('');
 
-  // Habilitar/deshabilitar checkout según haya elementos en el carrito
-  const checkoutBtn = document.getElementById('checkoutBtn');
-  if (Object.keys(cart).length === 0) {
-    checkoutBtn.setAttribute('disabled', 'true');
-    checkoutBtn.classList.add('opacity-50', 'pointer-events-none');
-  } else {
-    checkoutBtn.removeAttribute('disabled');
-    checkoutBtn.classList.remove('opacity-50', 'pointer-events-none');
-  }
-
-  // Re-activar iconos Lucide en caso de que se usen dinámicamente
-  if (window.lucide && window.lucide.replace) {
-    window.lucide.replace();
-  }
-
-  // Pequeña función util para escapar texto en HTML inyectado
-  function escapeHtml(str) {
-    if (!str) return '';
-    return String(str)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#039;');
-  }
-}
+      cartSubtotal.innerText = subtotal.toFixed(2) + ' €';
+      cartTotal.innerText = subtotal.toFixed(2) + ' €';
+      lucide.createIcons();
+    }
 
     function openCartModal() {
       document.getElementById('cartModal').classList.remove('hidden');
@@ -1496,7 +1455,7 @@
       orders.unshift(newOrder);
       saveOrdersState();
 
-      // If Google Sheets API URL is available, send directly to Google Sheets
+      // Send directly to Google Sheets Apps Script Backend
       if (googleScriptUrl) {
         try {
           await fetch(googleScriptUrl, {
@@ -1504,8 +1463,8 @@
             mode: 'no-cors',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              action: 'createOrder',
-              order: newOrder
+              ekintza: 'eskaeraSortu',
+              eskaera: newOrder
             })
           });
         } catch (err) {
@@ -1564,17 +1523,40 @@
       if (syncIcon) syncIcon.classList.add('animate-spin');
 
       try {
-        const resp = await fetch(googleScriptUrl);
+        const resp = await fetch(`${googleScriptUrl}?ekintza=eskaerak`);
         const data = await resp.json();
 
-        if (data && data.orders && Array.isArray(data.orders)) {
-          orders = data.orders;
+        if (data && data.success && Array.isArray(data.eskaerak)) {
+          orders = data.eskaerak.map(e => {
+            const myLines = (data.lerroak || []).filter(l => String(l.eskaeraId) === String(e.id));
+            return {
+              id: e.id,
+              customerName: e.izena,
+              phone: e.telefonoa,
+              deliveryMethod: e.banaketaMota,
+              contactPerson: e.kontaktua,
+              address: e.helbidea,
+              deliveryDate: e.banaketaData,
+              notes: e.oharrak,
+              status: e.egoera || 'Zain',
+              createdAt: e.eskaeraData,
+              total: Number(e.guztira) || 0,
+              items: myLines.map(l => ({
+                id: l.lerroZenbakia,
+                name: l.produktua,
+                qty: l.eskatutakoKopurua,
+                unitType: l.eskaeraUnitatea,
+                price: l.prezioa
+              }))
+            };
+          });
+
           saveOrdersState();
           renderAdminOrders();
           renderHarvestSummary();
-          showToast(`Sincronizado: ${orders.length} pedidos`, 'success');
+          showToast(`Sinkronizatuta: ${orders.length} eskaera`, 'success');
         } else {
-          showToast('Respuesta vacía de Google Sheets', 'info');
+          showToast('Erantzun hutsa Google Sheets-etik', 'info');
         }
       } catch (err) {
         console.error("Error fetching from Google Sheets:", err);
@@ -1713,9 +1695,9 @@
               mode: 'no-cors',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
-                action: 'updateStatus',
-                orderId: orderId,
-                status: newStatus
+                ekintza: 'eskaeraEgoeraAldatu',
+                eskaeraId: orderId,
+                egoera: newStatus
               })
             });
           } catch (e) {
