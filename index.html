@@ -300,26 +300,35 @@
     <!-- VIEW 2: ADMIN DASHBOARD (BASERRITAR MODUA) -->
     <section id="adminView" class="hidden space-y-6">
       
-      <!-- Admin Header Banner -->
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-stone-900 text-white p-6 rounded-2xl shadow-md">
-        <div>
-          <div class="flex items-center gap-2 text-amber-400 font-semibold text-xs uppercase tracking-wider mb-1">
-            <i data-lucide="shield-check" class="w-4 h-4"></i> <span id="adminTitleBadge">Baratzea Kudeatzeko Panel Kudeatzailea</span>
-          </div>
-          <h2 class="font-display text-2xl font-bold" id="adminHeaderTitle">Eskaerak eta Uzta Kudeaketa</h2>
-          <p class="text-stone-400 text-sm" id="adminHeaderSubtitle">Begiratu sartzen diren eskaerak, prestatu saskiak eta inprimatu bilketa-orria.</p>
-        </div>
-        <div class="flex items-center gap-2 flex-wrap">
-          <button onclick="openAddProductModal()" class="flex items-center gap-2 px-4 py-2.5 bg-brand-600 hover:bg-brand-500 text-white font-semibold rounded-xl text-sm transition shadow-sm">
-            <i data-lucide="plus-circle" class="w-4 h-4"></i>
-            <span id="btnAdminAddProd">Gehitu Produktua</span>
-          </button>
-          <button onclick="exportOrdersJSON()" class="flex items-center gap-2 px-3 py-2.5 bg-stone-800 hover:bg-stone-700 text-stone-200 font-medium rounded-xl text-sm border border-stone-700 transition">
-            <i data-lucide="download" class="w-4 h-4"></i>
-            <span class="hidden md:inline" id="btnAdminExport">Exportar</span>
-          </button>
-        </div>
-      </div>
+    <!-- Admin Header Banner -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-stone-900 text-white p-6 rounded-2xl shadow-md">
+  <div>
+    <div class="flex items-center gap-2 text-amber-400 font-semibold text-xs uppercase tracking-wider mb-1">
+      <i data-lucide="shield-check" class="w-4 h-4"></i>
+      <span id="adminTitleBadge">Baserritarraren panela</span>
+    </div>
+
+    <h2 id="adminHeaderTitle" class="font-display text-2xl font-bold">
+      Baserritarraren panela
+    </h2>
+
+    <p id="adminHeaderSubtitle" class="text-stone-400 text-sm">
+      Eskaerak, uzta, katalogoa eta banaketa kudeatu
+    </p>
+  </div>
+
+  <div class="flex items-center gap-2 flex-wrap">
+    <button onclick="openAddProductModal()" class="flex items-center gap-2 px-4 py-2.5 bg-brand-600 hover:bg-brand-500 text-white font-semibold rounded-xl text-sm transition shadow-sm">
+      <i data-lucide="plus-circle" class="w-4 h-4"></i>
+      <span id="btnAdminAddProd">Gehitu Produktua</span>
+    </button>
+
+    <button onclick="exportOrdersJSON()" class="flex items-center gap-2 px-3 py-2.5 bg-stone-800 hover:bg-stone-700 text-stone-200 font-medium rounded-xl text-sm border border-stone-700 transition">
+      <i data-lucide="download" class="w-4 h-4"></i>
+      <span class="hidden md:inline" id="btnAdminExport">Esportatu</span>
+    </button>
+  </div>
+</div>
 
       <!-- Admin Tabs Navigation -->
       <div class="flex border-b border-stone-200 space-x-6 text-sm font-medium">
@@ -327,18 +336,18 @@
           <i data-lucide="clipboard-list" class="w-4 h-4"></i> <span id="tabLabelOrders">Jasotako Eskaerak</span> (<span id="adminPendingCount">0</span>)
         </button>
         <button onclick="switchAdminTab('harvest')" id="tabBtnHarvest" class="pb-3 border-b-2 border-transparent text-stone-500 hover:text-stone-800 flex items-center gap-2">
-          <i data-lucide="sprout" class="w-4 h-4"></i> <span id="tabLabelHarvest">Uzta Guztia / Resumen Cosecha</span>
+          <i data-lucide="sprout" class="w-4 h-4"></i> <span id="tabLabelHarvest">Uzta Guztia</span>
         </button>
         <button onclick="switchAdminTab('catalog')" id="tabBtnCatalog" class="pb-3 border-b-2 border-transparent text-stone-500 hover:text-stone-800 flex items-center gap-2">
           <i data-lucide="boxes" class="w-4 h-4"></i> <span id="tabLabelCatalog">Katalogoa eta Inbentarioa</span>
         </button>
         <button onclick="switchAdminTab('contacts')" id="tabBtnContacts" class="pb-3 border-b-2 border-transparent text-stone-500 hover:text-stone-800 flex items-center gap-2">
-          <i data-lucide="users" class="w-4 h-4"></i> <span>Harremanak / Contactos</span>
+          <i data-lucide="users" class="w-4 h-4"></i> <span id="tabLabelContacts">Harremanak</span>
         </button>
         <button onclick="switchAdminTab('stats')" id="tabBtnStats"
         class="pb-3 border-b-2 border-transparent text-stone-500 hover:text-stone-800 flex items-center gap-2">
   <i data-lucide="chart-no-axes-combined" class="w-4 h-4"></i>
-  <span>Estatistikak / Estadísticas</span>
+  <span id="tabLabelStats">Estatistikak</span>
   </button>
       </div>
 
@@ -350,18 +359,18 @@
             <div class="flex items-center gap-2">
               <span class="text-stone-500 font-medium" id="filterStatusLabel">Egoera:</span>
               <select id="adminStatusFilter" onchange="renderAdminOrders()" class="bg-stone-50 border border-stone-300 rounded-lg px-2.5 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
-                <option value="ALL">Guztiak / Todos</option>
-                <option value="Pendiente">Zain / Pendiente</option>
-                <option value="Preparando">Prestatzen / Preparando</option>
-                <option value="Listo">Prest / Listo</option>
-                <option value="Completado">Eginda / Completado</option>
-              </select>
+  <option id="filterStatusAll" value="ALL">Guztiak</option>
+  <option id="filterStatusPending" value="pending">Zain</option>
+<option id="filterStatusPreparing" value="preparing">Prestatzen</option>
+<option id="filterStatusReady" value="ready">Prest</option>
+<option id="filterStatusCompleted" value="completed">Eginda</option>
+</select>
             </div>
 
             <div class="flex items-center gap-2">
               <span class="text-stone-500 font-medium" id="filterContactLabel">Harreman pertsona:</span>
               <select id="adminContactFilter" onchange="renderAdminOrders()" class="bg-stone-50 border border-stone-300 rounded-lg px-2.5 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
-                <option value="ALL">Pertsona guztiak / Todos</option>
+                <option id="filterContactAll" value="ALL">Pertsona guztiak</option>
                 <!-- Dynamically filled -->
               </select>
             </div>
@@ -403,19 +412,22 @@
 
     <div class="flex items-center justify-between gap-3 mb-4">
       <div>
-        <h3 class="font-display font-bold text-stone-800">
-          Kategoriak / Categorías
-        </h3>
-        <p class="text-xs text-stone-500">
-          Produktuak antolatzeko kategoriak / Categorías para organizar los productos
-        </p>
+        <h3 id="categoriesTitle"
+    class="font-display font-bold text-stone-800">
+  Kategoriak
+</h3>
+        <p id="categoriesDesc"
+   class="text-xs text-stone-500">
+  Produktuak antolatzeko kategoriak
+</p>
       </div>
 
       <button
-        onclick="openCategoryModal()"
-        class="px-3 py-2 bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold rounded-xl">
-        + Kategoria / Categoría
-      </button>
+  id="addCategoryBtn"
+  onclick="openCategoryModal()"
+  class="px-3 py-2 bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold rounded-xl">
+  + Kategoria
+</button>
     </div>
 
     <div id="adminCategoriesList"
@@ -452,8 +464,14 @@
       <div id="adminContactsTab" class="hidden space-y-4">
         <div class="bg-white rounded-2xl border border-stone-200 shadow-sm overflow-hidden">
           <div class="p-4 border-b border-stone-200 bg-stone-50">
-            <h3 class="font-display font-bold text-stone-800">Harreman pertsonak / Personas de contacto</h3>
-            <p class="text-xs text-stone-500 mt-1">Entrega en mano aukeratzean bezeroari agertuko zaizkion pertsonak.</p>
+            <h3 id="statsContactsTitle"
+    class="font-display font-bold text-stone-800">
+  Harreman-pertsonak
+</h3>
+            <p id="contactsDesc"
+   class="text-xs text-stone-500 mt-1">
+  Esku-eskura ematea aukeratzean bezeroari agertuko zaizkion pertsonak.
+</p>
           </div>
           <div class="p-4 grid grid-cols-1 lg:grid-cols-3 gap-5">
             <div class="lg:col-span-2">
@@ -462,17 +480,38 @@
             <form id="contactAdminForm" onsubmit="handleContactSubmit(event)" class="space-y-3 bg-stone-50 p-4 rounded-xl border border-stone-200">
               <input type="hidden" id="editContactId">
               <div>
-                <label class="block text-xs font-semibold text-stone-700 mb-1">Izena / Nombre</label>
+                <label id="contactNameLabel"
+       class="block text-xs font-semibold text-stone-700 mb-1">
+  Izena
+</label>
                 <input id="contactAdminName" type="text" required class="w-full px-3 py-2 border border-stone-300 rounded-lg text-sm">
               </div>
               <div>
-                <label class="block text-xs font-semibold text-stone-700 mb-1">Zona / Oharra</label>
-                <input id="contactAdminZone" type="text" placeholder="Adib. Plentzia / Getxo" class="w-full px-3 py-2 border border-stone-300 rounded-lg text-sm">
+                <label id="contactZoneLabel"
+       class="block text-xs font-semibold text-stone-700 mb-1">
+  Zona / oharra
+</label>
+                <input id="contactAdminZone"
+       type="text"
+       placeholder="Adib. Plentzia / Getxo"
+       class="w-full px-3 py-2 border border-stone-300 rounded-lg text-sm">
               </div>
               <div class="flex justify-end gap-2">
-                <button type="button" onclick="resetContactForm()" class="px-3 py-2 border border-stone-300 rounded-lg text-xs">Garbitu</button>
-                <button type="submit" class="px-3 py-2 bg-brand-700 text-white rounded-lg text-xs font-bold">Gorde</button>
-              </div>
+  <button
+    id="contactClearBtn"
+    type="button"
+    onclick="resetContactForm()"
+    class="px-3 py-2 border border-stone-300 rounded-lg text-xs">
+    Garbitu
+  </button>
+
+  <button
+    id="contactSaveBtn"
+    type="submit"
+    class="px-3 py-2 bg-brand-700 text-white rounded-lg text-xs font-bold">
+    Gorde
+  </button>
+</div>
             </form>
           </div>
         </div>
@@ -627,9 +666,10 @@
     </div>
 
     <div class="bg-white rounded-2xl border border-stone-200 shadow-sm p-5">
-      <h3 class="font-display font-bold text-stone-800 mb-4">
-        Harreman pertsonak / Personas de contacto
-      </h3>
+      <h3 id="contactsTitle"
+    class="font-display font-bold text-stone-800">
+  Harremanetarako pertsonak
+</h3>
       <div id="statsContacts" class="space-y-3"></div>
     </div>
 
@@ -1082,6 +1122,33 @@ tabCatalog: "Katalogoa",
 tabContacts: "Harremanak",
 tabStats: "Estatistikak",
 
+        // Eskaerak
+filterStatus: "Egoera:",
+filterContact: "Harreman-pertsona:",
+allStatuses: "Guztiak",
+allContacts: "Pertsona guztiak",
+statusPending: "Zain",
+statusPreparing: "Prestatzen",
+statusReady: "Prest",
+statusCompleted: "Eginda",
+ordersShowing: "eskaera erakusten",
+noOrders: "Ez dago eskaerarik iragazki honekin.",
+statusLabel: "Egoera:",
+contactLabel: "Harremana:",
+deliveryDateLabel: "Banaketa-data:",
+noteLabel: "Oharra:",
+productsLabel: "Produktuak:",
+estimatedTotal: "Guztira gutxi gorabehera:",
+realKg: "Benetako kg:",
+pendingWeight: "+ pisatzeko",
+remove: "Kendu",
+deleteOrder: "Ezabatu",
+
+// Uzta
+harvestTitle: "Uzta biltzeko zerrenda",
+harvestDesc: "Jasotako eskaerei erantzuteko baratzean bildu behar duzun kilo eta unitate kopurua.",
+printSheet: "Inprimatu orria",
+noHarvest: "Ez dago prestatzeko produkturik",
 // Katalogoa
 categoriesTitle: "Kategoriak",
 categoriesDesc: "Produktuak antolatzeko kategoriak",
@@ -1095,6 +1162,11 @@ catalogActions: "Ekintzak",
 available: "Eskuragarri",
 soldOut: "Agortuta",
 edit: "Editatu",
+        catalogTitle: "Baratzeko produktuen katalogoa",
+catalogSubtitle: "Eskuragarritasuna edo prezioak unean bertan alda ditzakezu",
+disableProduct: "Agortu",
+enableProduct: "Gaitu",
+delete: "Ezabatu"
 
 // Kategoriak
 categoryModalTitle: "Kategoria",
@@ -1103,6 +1175,18 @@ categoryNameEs: "Izena gaztelaniaz",
 save: "Gorde",
 noCategories: "Ez dago kategoriarik",
 
+// Harremanak
+contactsTitle: "Harreman-pertsonak",
+contactsDesc: "Esku-eskura ematea aukeratzean bezeroari agertuko zaizkion pertsonak.",
+contactName: "Izena",
+contactZone: "Zona / oharra",
+contactZonePlaceholder: "Adib. Plentzia / Getxo",
+clear: "Garbitu",
+contactSave: "Gorde",
+noContacts: "Ez dago kontakturik.",
+contactSaved: "Kontaktua gordeta",
+deleteContactConfirm: "Kontaktua ezabatu nahi duzu?",
+  
 // Estatistikak
 statsTitle: "Estatistikak",
 statsSubtitle: "Eskaeren eta salmenten laburpena",
@@ -1169,7 +1253,35 @@ tabCatalog: "Catálogo",
 tabContacts: "Contactos",
 tabStats: "Estadísticas",
 
-// Katalogoa
+// Eskaerak
+filterStatus: "Estado:",
+filterContact: "Persona de contacto:",
+allStatuses: "Todos",
+allContacts: "Todas las personas",
+statusPending: "Pendiente",
+statusPreparing: "Preparando",
+statusReady: "Listo",
+statusCompleted: "Completado",
+ordersShowing: "pedidos mostrado(s)",
+noOrders: "No hay pedidos con este filtro.",
+statusLabel: "Estado:",
+contactLabel: "Contacto:",
+deliveryDateLabel: "Fecha de entrega/recogida:",
+noteLabel: "Nota:",
+productsLabel: "Productos:",
+estimatedTotal: "Total estimado:",
+realKg: "Kg reales:",
+pendingWeight: "+ pendiente de pesar",
+remove: "Quitar",
+deleteOrder: "Eliminar",
+
+// Uzta
+harvestTitle: "Lista para preparar la cosecha",
+harvestDesc: "Cantidad total de kilos y unidades que debes recoger en la huerta para preparar los pedidos recibidos.",
+printSheet: "Imprimir hoja",
+noHarvest: "No hay productos que preparar",
+          
+// Katalogoa_gazt
 categoriesTitle: "Categorías",
 categoriesDesc: "Categorías para organizar los productos",
 addCategory: "+ Categoría",
@@ -1182,6 +1294,11 @@ catalogActions: "Acciones",
 available: "Disponible",
 soldOut: "Agotado",
 edit: "Editar",
+        catalogTitle: "Catálogo de productos de la huerta",
+catalogSubtitle: "Puedes cambiar la disponibilidad o los precios al momento",
+disableProduct: "Agotar",
+enableProduct: "Activar",
+delete: "Eliminar"
 
 // Kategoriak
 categoryModalTitle: "Categoría",
@@ -1190,7 +1307,19 @@ categoryNameEs: "Nombre en castellano",
 save: "Guardar",
 noCategories: "No hay categorías",
 
-// Estatistikak
+// Harremanak
+contactsTitle: "Personas de contacto",
+contactsDesc: "Personas que se mostrarán al cliente cuando elija la entrega en mano.",
+contactName: "Nombre",
+contactZone: "Zona / nota",
+contactZonePlaceholder: "Ej. Plentzia / Getxo",
+clear: "Limpiar",
+contactSave: "Guardar",
+noContacts: "No hay contactos.",
+contactSaved: "Contacto guardado",
+deleteContactConfirm: "¿Quieres eliminar este contacto?",
+  
+// Estatistikak_gazt
 statsTitle: "Estadísticas",
 statsSubtitle: "Resumen de pedidos y ventas",
 period: "Periodo",
@@ -1334,7 +1463,7 @@ noData: "Sin datos"
         address: 'Calle Mayor 14, Bilbao',
         deliveryDate: new Date().toISOString().split('T')[0],
         notes: 'Arratsaldez 17:00etatik aurrera.',
-        status: 'Pendiente',
+        status: 'pending',
         createdAt: new Date().toLocaleString('es-ES'),
         items: [
           { id: 'p1', name: 'Tomate de Huerta Rosa / Baserriko Tomate Arrosa', qty: 2.0, unitType: 'kg', price: 2.80 },
@@ -1586,6 +1715,55 @@ if (currentView === 'admin') {
       document.getElementById('labelNotes').innerText = t.labelNotes;
       document.getElementById('modalNoticeText').innerHTML = t.modalNotice;
       document.getElementById('btnSubmitSystem').innerText = t.btnSubmitSystem;
+      // Administrazio panela
+document.getElementById('adminTitleBadge').innerText = t.adminTitle;
+document.getElementById('adminHeaderTitle').innerText = t.adminTitle;
+document.getElementById('adminHeaderSubtitle').innerText = t.adminSubtitle;
+
+document.getElementById('tabLabelOrders').innerText = t.tabOrders;
+document.getElementById('tabLabelHarvest').innerText = t.tabHarvest;
+document.getElementById('tabLabelCatalog').innerText = t.tabCatalog;
+document.getElementById('tabLabelContacts').innerText = t.tabContacts;
+document.getElementById('tabLabelStats').innerText = t.tabStats;
+
+// Kategoriak
+document.getElementById('categoriesTitle').innerText = t.categoriesTitle;
+document.getElementById('categoriesDesc').innerText = t.categoriesDesc;
+document.getElementById('addCategoryBtn').innerText = t.addCategory;
+
+// Katalogoa
+document.getElementById('catalogTitle').innerText = t.catalogTitle;
+document.getElementById('catalogSubtitle').innerText = t.catalogSubtitle;
+document.getElementById('thProduct').innerText = t.catalogProduct;
+document.getElementById('thCategory').innerText = t.catalogCategory;
+document.getElementById('thPrice').innerText = t.catalogPrice;
+document.getElementById('thUnit').innerText = t.catalogUnit;
+document.getElementById('thStatus').innerText = t.catalogStatus;
+document.getElementById('thActions').innerText = t.catalogActions;
+
+// Eskaerak
+document.getElementById('filterStatusLabel').innerText = t.filterStatus;
+document.getElementById('filterContactLabel').innerText = t.filterContact;
+
+document.getElementById('filterStatusAll').innerText = t.allStatuses;
+document.getElementById('filterStatusPending').innerText = t.statusPending;
+document.getElementById('filterStatusPreparing').innerText = t.statusPreparing;
+document.getElementById('filterStatusReady').innerText = t.statusReady;
+document.getElementById('filterStatusCompleted').innerText = t.statusCompleted;
+document.getElementById('filterContactAll').innerText = t.allContacts;
+
+// Uzta
+document.getElementById('harvestTitle').innerText = t.harvestTitle;
+document.getElementById('harvestDesc').innerText = t.harvestDesc;
+document.getElementById('btnPrintSheet').innerText = t.printSheet;
+      // Harremanak
+document.getElementById('contactsTitle').innerText = t.contactsTitle;
+document.getElementById('contactsDesc').innerText = t.contactsDesc;
+document.getElementById('contactNameLabel').innerText = t.contactName;
+document.getElementById('contactZoneLabel').innerText = t.contactZone;
+document.getElementById('contactAdminZone').placeholder = t.contactZonePlaceholder;
+document.getElementById('contactClearBtn').innerText = t.clear;
+document.getElementById('contactSaveBtn').innerText = t.contactSave;
     }
 
     function switchView(view) {
@@ -1956,24 +2134,41 @@ const displayTag = getProductTag(prod);
     }
 
     function renderContactsAdmin() {
-      const container = document.getElementById('contactsAdminList');
-      if (!container) return;
-      if (!contacts.length) {
-        container.innerHTML = '<div class="text-sm text-stone-400 p-4">Ez dago kontakturik / No hay contactos.</div>';
-        return;
-      }
-      container.innerHTML = contacts.map(c => `
-        <div class="flex items-center justify-between gap-3 p-3 rounded-xl border border-stone-200 bg-white">
-          <div>
-            <div class="font-bold text-stone-800">${c.name}</div>
-            <div class="text-xs text-stone-500">${c.zone || ''}</div>
-          </div>
-          <div class="flex gap-2">
-            <button onclick="editContact('${c.id}')" class="px-2.5 py-1 text-xs font-bold border border-stone-300 rounded-lg">Editatu</button>
-            <button onclick="deleteContact('${c.id}')" class="px-2.5 py-1 text-xs font-bold text-rose-600 border border-rose-200 rounded-lg">Ezabatu</button>
-          </div>
-        </div>`).join('');
-    }
+  const t = I18N[currentLang];
+  const container = document.getElementById('contactsAdminList');
+
+  if (!container) return;
+
+  if (!contacts.length) {
+    container.innerHTML = `
+      <div class="text-sm text-stone-400 p-4">
+        ${t.noContacts}
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = contacts.map(c => `
+    <div class="flex items-center justify-between gap-3 p-3 rounded-xl border border-stone-200 bg-white">
+      <div>
+        <div class="font-bold text-stone-800">${c.name}</div>
+        <div class="text-xs text-stone-500">${c.zone || ''}</div>
+      </div>
+
+      <div class="flex gap-2">
+        <button onclick="editContact('${c.id}')"
+                class="px-2.5 py-1 text-xs font-bold border border-stone-300 rounded-lg">
+          ${t.edit}
+        </button>
+
+        <button onclick="deleteContact('${c.id}')"
+                class="px-2.5 py-1 text-xs font-bold text-rose-600 border border-rose-200 rounded-lg">
+          ${t.delete}
+        </button>
+      </div>
+    </div>
+  `).join('');
+}
 
     function resetContactForm() {
       const form = document.getElementById('contactAdminForm');
@@ -2012,11 +2207,11 @@ const displayTag = getProductTag(prod);
       resetContactForm();
       populateContactSelectors();
       renderContactsAdmin();
-      showToast('Kontaktua gordeta / Contacto guardado', 'success');
+      showToast(I18N[currentLang].contactSaved, 'success');
     }
 
     async function deleteContact(id) {
-      if (!confirm('Kontaktua ezabatu? / ¿Eliminar contacto?')) return;
+      if (!confirm(I18N[currentLang].deleteContactConfirm)) return;
       contacts = contacts.filter(c => c.id !== id);
       await saveContactsState();
       populateContactSelectors();
@@ -2024,46 +2219,66 @@ const displayTag = getProductTag(prod);
     }
 
     function renderHarvestSummary() {
-      const container = document.getElementById('harvestSummaryList');
-      const activeOrders = orders.filter(o => o.status === 'Pendiente' || o.status === 'Preparando');
+  const t = I18N[currentLang];
+  const container = document.getElementById('harvestSummaryList');
 
-      if (activeOrders.length === 0) {
-        container.innerHTML = `
-          <div class="py-8 text-center text-stone-400">
-            <i data-lucide="sprout" class="w-8 h-8 mx-auto mb-1 stroke-1"></i>
-            <p class="text-sm">Ez dago uzta biltzeko eskaera aktiborik.</p>
-          </div>
-        `;
-        lucide.createIcons();
-        return;
+  const activeOrders = orders.filter(
+  o => o.status === 'Pendiente' || o.status === 'Preparando'
+);
+
+  if (activeOrders.length === 0) {
+    container.innerHTML = `
+      <div class="py-8 text-center text-stone-400">
+        <i data-lucide="sprout" class="w-8 h-8 mx-auto mb-1 stroke-1"></i>
+        <p class="text-sm">${t.noHarvest}</p>
+      </div>
+    `;
+
+    lucide.createIcons();
+    return;
+  }
+
+  const totals = {};
+
+  activeOrders.forEach(order => {
+    (order.items || []).forEach(item => {
+      const key = item.id;
+
+      if (!totals[key]) {
+        totals[key] = {
+          item,
+          qty: 0,
+          unitType: item.unitType || 'ud'
+        };
       }
 
-      const totals = {}; // { itemKey: { name, qty, unitType } }
-      activeOrders.forEach(ord => {
-        ord.items.forEach(item => {
-          const key = item.id;
+      totals[key].qty += Number(item.qty) || 0;
+    });
+  });
 
-if (!totals[key]) {
-  totals[key] = {
-    item,
-    qty: 0,
-    unitType: item.unitType || 'ud'
-  };
+  container.innerHTML = Object.values(totals)
+    .sort((a, b) =>
+      getOrderItemName(a.item).localeCompare(
+        getOrderItemName(b.item),
+        currentLang === 'eu' ? 'eu' : 'es'
+      )
+    )
+    .map(item => `
+      <div class="py-3 flex items-center justify-between">
+        <span class="font-medium text-stone-800 text-sm">
+          ${getOrderItemName(item.item)}
+        </span>
+
+        <span class="font-extrabold text-brand-800 text-base bg-brand-50 px-3 py-1 rounded-lg border border-brand-200">
+          ${item.qty.toFixed(item.unitType === 'kg' ? 1 : 0)}
+          ${item.unitType}
+        </span>
+      </div>
+    `)
+    .join('');
+
+  lucide.createIcons();
 }
-
-totals[key].qty += Number(item.qty) || 0;
-
-      container.innerHTML = Object.values(totals).map(item => `
-        <div class="py-3 flex items-center justify-between">
-          <span class="font-medium text-stone-800 text-sm">${getOrderItemName(item.item)}</span>
-          <span class="font-extrabold text-brand-800 text-base bg-brand-50 px-3 py-1 rounded-lg border border-brand-200">
-            ${item.qty.toFixed(item.unitType === 'kg' ? 1 : 0)} ${item.unitType}
-          </span>
-        </div>
-      `).join('');
-
-      lucide.createIcons();
-    }
 
 function renderAdminCategories() {
   const container = document.getElementById('adminCategoriesList');
@@ -2072,7 +2287,7 @@ function renderAdminCategories() {
   if (!categories.length) {
     container.innerHTML = `
       <span class="text-sm text-stone-400">
-        Ez dago kategoriarik / No hay categorías
+        ${I18N[currentLang].noCategories}
       </span>
     `;
     return;
@@ -2185,6 +2400,7 @@ async function deleteCategory(id) {
 }
     
     function renderAdminCatalog() {
+      const t = I18N[currentLang];
       const tbody = document.getElementById('adminCatalogTable');
       tbody.innerHTML = products.map(prod => `
         <tr class="hover:bg-stone-50 border-b border-stone-100">
@@ -2196,18 +2412,18 @@ async function deleteCategory(id) {
           <td class="p-3.5 text-stone-600">${prod.priceType === 'lote' ? `${prod.packSize} ${prod.packUnit}` : (prod.priceType === 'ud_kg' ? 'ud → €/kg' : (prod.orderUnit || prod.unitType || prod.priceType))}</td>
           <td class="p-3.5">
             <span class="px-2.5 py-0.5 rounded-full text-xs font-bold ${prod.available ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">
-              ${prod.available ? 'Eskuragarri / Disponible' : 'Agotado'}
+              ${prod.available ? t.available : t.soldOut}
             </span>
           </td>
           <td class="p-3.5 text-right space-x-2">
             <button onclick="editProduct('${prod.id}')" class="px-2.5 py-1 text-xs font-bold rounded-lg border border-stone-300 hover:bg-stone-100">
-              Editatu
+              ${t.edit}
             </button>
             <button onclick="toggleProductAvailability('${prod.id}')" class="px-2.5 py-1 text-xs font-bold rounded-lg border border-stone-300 hover:bg-stone-100">
-              ${prod.available ? 'Agotatu' : 'Gaitu'}
+              ${prod.available ? t.disableProduct : t.enableProduct}
             </button>
             <button onclick="deleteProduct('${prod.id}')" class="px-2.5 py-1 text-xs font-bold text-rose-600 rounded-lg border border-rose-200 hover:bg-rose-50">
-              Ezabatu
+              ${t.delete}
             </button>
           </td>
         </tr>
@@ -2541,7 +2757,7 @@ const randomPart = Math.random().toString(36).slice(2, 6).toUpperCase();
 const newOrderId = `ESK-${stamp}-${randomPart}`;
       const newOrder = {
         id: newOrderId, customerName: name, email, deliveryMethod: method, contactPerson,
-        deliveryDate: '', notes: notes || '-', status: 'Pendiente', createdAt: new Date().toISOString(),
+        deliveryDate: '', notes: notes || '-', status: 'pending', createdAt: new Date().toISOString(),
         items: orderItems, removedItems: [], total: 0
       };
       newOrder.total = calculateOrderTotal(newOrder);
@@ -2589,12 +2805,13 @@ const newOrderId = `ESK-${stamp}-${randomPart}`;
 
 
     function renderAdminOrders() {
-      const container = document.getElementById('adminOrdersList');
+  const t = I18N[currentLang];
+  const container = document.getElementById('adminOrdersList');
       const statusFilter = document.getElementById('adminStatusFilter').value;
       const contactFilter = document.getElementById('adminContactFilter').value;
       const pendingBadge = document.getElementById('adminPendingCount');
 
-      const pendingCount = orders.filter(o => o.status === 'Pendiente').length;
+      const pendingCount = orders.filter(o => o.status === 'pending').length;
       if (pendingBadge) pendingBadge.innerText = pendingCount;
 
       const filteredOrders = orders.filter(o => {
@@ -2605,13 +2822,14 @@ const newOrderId = `ESK-${stamp}-${randomPart}`;
   return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
 });
 
-      document.getElementById('ordersSummaryText').innerText = `${filteredOrders.length} eskaera erakusten`;
+      document.getElementById('ordersSummaryText').innerText =
+  `${filteredOrders.length} ${t.ordersShowing}`;
 
       if (filteredOrders.length === 0) {
         container.innerHTML = `
           <div class="bg-white p-8 rounded-2xl border border-stone-200 text-center text-stone-500">
             <i data-lucide="check-circle-2" class="w-10 h-10 mx-auto text-stone-300 mb-2"></i>
-            <p class="font-medium">Ez dago eskaerarik iragazki honekin.</p>
+            <p class="font-medium">${t.noOrders}</p>
           </div>
         `;
         lucide.createIcons();
@@ -2620,11 +2838,11 @@ const newOrderId = `ESK-${stamp}-${randomPart}`;
 
       container.innerHTML = filteredOrders.map(order => {
         const statusColors = {
-          'Pendiente': 'bg-amber-100 text-amber-800 border-amber-300',
-          'Preparando': 'bg-blue-100 text-blue-800 border-blue-300',
-          'Listo': 'bg-emerald-100 text-emerald-800 border-emerald-300',
-          'Completado': 'bg-stone-100 text-stone-600 border-stone-300'
-        };
+  pending: 'bg-amber-100 text-amber-800 border-amber-300',
+  preparing: 'bg-blue-100 text-blue-800 border-blue-300',
+  ready: 'bg-emerald-100 text-emerald-800 border-emerald-300',
+  completed: 'bg-stone-100 text-stone-600 border-stone-300'
+};
 
         return `
           <div class="bg-white rounded-2xl border border-stone-200 shadow-sm overflow-hidden p-5 space-y-4">
@@ -2632,17 +2850,19 @@ const newOrderId = `ESK-${stamp}-${randomPart}`;
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-stone-100">
               <div class="flex items-center gap-3">
                 <span class="font-display font-extrabold text-stone-900 text-lg">${order.id}</span>
-                <span class="text-xs text-stone-400">• ${order.createdAt ? new Date(order.createdAt).toLocaleString('es-ES') : ''}</span>
+                <span class="text-xs text-stone-400">• ${order.createdAt ? new Date(order.createdAt).toLocaleString(
+  currentLang === 'eu' ? 'eu-ES' : 'es-ES'
+) : ''}</span>
               </div>
 
               <div class="flex items-center gap-2">
-                <span class="text-xs text-stone-500 font-medium">Egoera:</span>
+                <span class="text-xs text-stone-500 font-medium">${t.statusLabel}</span>
                 <select onchange="updateOrderStatus('${order.id}', this.value)" 
                         class="text-xs font-bold px-3 py-1.5 rounded-full border ${statusColors[order.status] || 'bg-stone-100'} focus:outline-none cursor-pointer">
-                  <option value="Pendiente" ${order.status === 'Pendiente' ? 'selected' : ''}>⏳ Zain / Pendiente</option>
-                  <option value="Preparando" ${order.status === 'Preparando' ? 'selected' : ''}>🚜 Prestatzen / Preparando</option>
-                  <option value="Listo" ${order.status === 'Listo' ? 'selected' : ''}>✅ Prest / Listo</option>
-                  <option value="Completado" ${order.status === 'Completado' ? 'selected' : ''}>📦 Eginda / Completado</option>
+                  <option value="pending" ${order.status === 'pending' ? 'selected' : ''}>⏳ ${t.statusPending}</option>
+<option value="preparing" ${order.status === 'preparing' ? 'selected' : ''}>🚜 ${t.statusPreparing}</option>
+<option value="ready" ${order.status === 'ready' ? 'selected' : ''}>✅ ${t.statusReady}</option>
+<option value="completed" ${order.status === 'completed' ? 'selected' : ''}>📦 ${t.statusCompleted}</option>
                 </select>
               </div>
             </div>
@@ -2660,19 +2880,25 @@ const newOrderId = `ESK-${stamp}-${randomPart}`;
                 </div>
                 ${order.deliveryMethod === 'Entrega en Mano' ? `
                   <div class="text-xs font-semibold text-brand-800 flex items-center gap-1.5 bg-brand-50 p-1.5 rounded-md border border-brand-200">
-                    <i data-lucide="user-check" class="w-3.5 h-3.5 text-brand-600"></i> Harreman: ${order.contactPerson || '-'}
+                    <i data-lucide="user-check" class="w-3.5 h-3.5 text-brand-600"></i> ${t.contactLabel} ${order.contactPerson || '-'}
                   </div>` : ''}
                 <div class="text-xs text-stone-600 space-y-1">
-                  <label class="flex items-center gap-1.5 font-semibold"><i data-lucide="calendar" class="w-3.5 h-3.5 text-stone-400"></i> Entrega / Jasotze data:</label>
+                  <label class="flex items-center gap-1.5 font-semibold"><i data-lucide="calendar" class="w-3.5 h-3.5 text-stone-400"></i> ${t.deliveryDateLabel}</label>
                   <input type="date" value="${order.deliveryDate || ''}" onchange="saveDeliveryDate('${order.id}', this.value)" class="w-full px-2.5 py-1.5 border border-stone-300 rounded-lg bg-white text-xs font-semibold">
                 </div>
-                ${order.notes && order.notes !== '-' ? `<div class="text-xs text-amber-800 bg-amber-50 p-2 rounded-lg border border-amber-200 mt-1"><strong>Oharra:</strong> ${order.notes}</div>` : ''}
+                ${order.notes && order.notes !== '-' ? `<div class="text-xs text-amber-800 bg-amber-50 p-2 rounded-lg border border-amber-200 mt-1"><strong>${t.noteLabel}</strong> ${order.notes}</div>` : ''}
               </div>
 
               <div class="lg:col-span-2 space-y-2">
                 <div class="text-xs font-bold text-stone-500 uppercase tracking-wider flex justify-between">
-                  <span>Produktuak:</span>
-                  <span>Total Est.: ${Number(order.total || 0).toFixed(2)} €${(order.items || []).some(i => i.priceType === 'ud_kg' && (i.realWeight === null || i.realWeight === undefined)) ? ' + pisatzeko' : ''}</span>
+                  <span>${t.productsLabel}</span>
+                  <span>
+  ${t.estimatedTotal} ${Number(order.total || 0).toFixed(2)} €
+  ${(order.items || []).some(i =>
+    i.priceType === 'ud_kg' &&
+    (i.realWeight === null || i.realWeight === undefined)
+  ) ? ` ${t.pendingWeight}` : ''}
+</span>
                 </div>
 
                 <div class="space-y-1.5">
@@ -2690,7 +2916,7 @@ const newOrderId = `ESK-${stamp}-${randomPart}`;
                             </span>
                           ` : ''}
                           <div class="flex items-center gap-1.5">
-                            <span class="text-stone-500 font-semibold text-xs">Benetako kg:</span>
+                            <span class="text-stone-500 font-semibold text-xs">${t.realKg}</span>
                             <input type="number" step="0.1" min="0" value="${item.realWeight ?? ''}" placeholder="${item.priceType === 'ud_kg' ? '' : item.qty}"
                                    onchange="saveRealWeight('${order.id}', ${idx}, this.value)"
                                    class="w-16 px-1.5 py-1 border border-stone-300 rounded text-center font-bold bg-white focus:ring-2 focus:ring-brand-500">
@@ -2701,7 +2927,7 @@ const newOrderId = `ESK-${stamp}-${randomPart}`;
                           ${item.qty} ${item.unitType}
                         </span>
                       `}
-                      <button onclick="openRemoveItemModal('${order.id}', ${idx})" class="ml-2 p-1.5 text-rose-500 hover:bg-rose-50 rounded-lg" title="Kendu / Quitar">
+                      <button onclick="openRemoveItemModal('${order.id}', ${idx})" class="ml-2 p-1.5 text-rose-500 hover:bg-rose-50 rounded-lg" title="${t.remove}">
                         <i data-lucide="trash-2" class="w-4 h-4"></i>
                       </button>
                     </div>
@@ -2710,7 +2936,7 @@ const newOrderId = `ESK-${stamp}-${randomPart}`;
 
                 <div class="flex justify-end gap-2 pt-2">
                   <button onclick="deleteOrder('${order.id}')" class="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs font-bold rounded-lg border border-rose-200 transition">
-                    Ezabatu / Eliminar
+                    ${t.deleteOrder}
                   </button>
                 </div>
 
@@ -2737,7 +2963,7 @@ const newOrderId = `ESK-${stamp}-${randomPart}`;
       const order = orders.find(o => o.id === orderId);
       if (!order) return;
 
-      if (newStatus === 'Completado') {
+      if (newStatus === 'completed') {
         if (!order.items || order.items.length === 0) {
           showToast('Eskaera hutsik dago / El pedido no tiene productos', 'info');
           renderAdminOrders();
@@ -2763,7 +2989,9 @@ const newOrderId = `ESK-${stamp}-${randomPart}`;
 
       try {
         const updates = { status: newStatus };
-        if (newStatus === 'Completado') updates.completedAt = new Date().toISOString();
+        if (newStatus === 'completed') {
+  updates.completedAt = new Date().toISOString();
+}
         await database.ref('eskaerak/' + orderId).update(updates);
         showToast(`Pedido ${orderId} -> ${newStatus}`, 'success');
       } catch (error) {
@@ -3089,9 +3317,9 @@ function renderStatistics() {
 
   // Real sales: orders completed during selected period
   const completedOrders = orders.filter(order =>
-    order.status === 'Completado' &&
-    dateInsideRange(order.completedAt || order.createdAt, from, to)
-  );
+  order.status === 'completed' &&
+  dateInsideRange(order.completedAt || order.createdAt, from, to)
+);
 
   const revenue = completedOrders.reduce(
     (sum, order) => sum + Number(order.total || 0),
