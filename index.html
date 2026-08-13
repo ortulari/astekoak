@@ -2426,9 +2426,21 @@ database.ref('kategoriak').on('value', snapshot => {
     ? (Array.isArray(data) ? data.filter(Boolean) : Object.values(data))
     : [];
 
+  console.log('Kategoriak Firebase-tik:', categories);
+
   renderCategories();
   populateProductCategorySelect();
   renderAdminCategories();
+
+}, error => {
+  console.error('Kategoriak irakurtzean errorea:', error);
+
+  showToast(
+    currentLang === 'eu'
+      ? 'Ezin izan dira kategoriak Firebase-tik irakurri'
+      : 'No se han podido leer las categorías de Firebase',
+    'error'
+  );
 });
       database.ref('katalogoa').on('value', snapshot => {
         const data = snapshot.val();
