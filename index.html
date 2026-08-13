@@ -335,6 +335,11 @@
         <button onclick="switchAdminTab('contacts')" id="tabBtnContacts" class="pb-3 border-b-2 border-transparent text-stone-500 hover:text-stone-800 flex items-center gap-2">
           <i data-lucide="users" class="w-4 h-4"></i> <span>Harremanak / Contactos</span>
         </button>
+        <button onclick="switchAdminTab('stats')" id="tabBtnStats"
+        class="pb-3 border-b-2 border-transparent text-stone-500 hover:text-stone-800 flex items-center gap-2">
+  <i data-lucide="chart-no-axes-combined" class="w-4 h-4"></i>
+  <span>Estatistikak / Estadísticas</span>
+  </button>
       </div>
 
       <!-- TAB CONTENT 1: ORDERS MANAGEMENT -->
@@ -447,7 +452,142 @@
           </div>
         </div>
       </div>
+      <!-- TAB CONTENT 5: STATISTICS -->
+<div id="adminStatsTab" class="hidden space-y-5">
 
+  <!-- Period filter -->
+  <div class="bg-white p-4 rounded-2xl border border-stone-200 shadow-sm">
+    <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
+      <div>
+        <h3 class="font-display font-bold text-stone-900 text-lg">
+          Estatistikak / Estadísticas
+        </h3>
+        <p class="text-xs text-stone-500 mt-1">
+          Eskaeren eta salmenten laburpena / Resumen de pedidos y ventas
+        </p>
+      </div>
+
+      <div class="flex flex-wrap items-end gap-3">
+        <div>
+          <label class="block text-[11px] font-semibold text-stone-500 mb-1">
+            Epea / Periodo
+          </label>
+          <select id="statsPeriod"
+                  onchange="handleStatsPeriodChange()"
+                  class="px-3 py-2 border border-stone-300 bg-white rounded-xl text-sm">
+            <option value="today">Gaur / Hoy</option>
+            <option value="week">Aste honetan / Esta semana</option>
+            <option value="month" selected>Hilabete honetan / Este mes</option>
+            <option value="year">Urte honetan / Este año</option>
+            <option value="custom">Pertsonalizatua / Personalizado</option>
+          </select>
+        </div>
+
+        <div id="statsCustomDates" class="hidden flex flex-wrap gap-2">
+          <div>
+            <label class="block text-[11px] font-semibold text-stone-500 mb-1">
+              Hasiera / Desde
+            </label>
+            <input id="statsDateFrom" type="date"
+                   onchange="renderStatistics()"
+                   class="px-3 py-2 border border-stone-300 rounded-xl text-sm">
+          </div>
+
+          <div>
+            <label class="block text-[11px] font-semibold text-stone-500 mb-1">
+              Amaiera / Hasta
+            </label>
+            <input id="statsDateTo" type="date"
+                   onchange="renderStatistics()"
+                   class="px-3 py-2 border border-stone-300 rounded-xl text-sm">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="statsPeriodLabel"
+         class="text-xs text-brand-700 font-semibold mt-3"></div>
+  </div>
+
+
+  <!-- Main figures -->
+  <div class="grid grid-cols-2 lg:grid-cols-5 gap-3">
+
+    <div class="bg-white p-4 rounded-2xl border border-stone-200 shadow-sm">
+      <div class="text-xs text-stone-500">Eskaerak / Pedidos</div>
+      <div id="statOrders" class="text-2xl font-extrabold text-stone-900 mt-1">0</div>
+    </div>
+
+    <div class="bg-white p-4 rounded-2xl border border-stone-200 shadow-sm">
+      <div class="text-xs text-stone-500">Osatuak / Completados</div>
+      <div id="statCompleted" class="text-2xl font-extrabold text-stone-900 mt-1">0</div>
+    </div>
+
+    <div class="bg-brand-50 p-4 rounded-2xl border border-brand-200 shadow-sm">
+      <div class="text-xs text-brand-700">Fakturazioa / Facturación</div>
+      <div id="statRevenue" class="text-2xl font-extrabold text-brand-800 mt-1">0,00 €</div>
+    </div>
+
+    <div class="bg-white p-4 rounded-2xl border border-stone-200 shadow-sm">
+      <div class="text-xs text-stone-500">Batez bestekoa / Ticket medio</div>
+      <div id="statAverage" class="text-2xl font-extrabold text-stone-900 mt-1">0,00 €</div>
+    </div>
+
+    <div class="bg-white p-4 rounded-2xl border border-stone-200 shadow-sm col-span-2 lg:col-span-1">
+      <div class="text-xs text-stone-500">Bezeroak / Clientes</div>
+      <div id="statCustomers" class="text-2xl font-extrabold text-stone-900 mt-1">0</div>
+    </div>
+
+  </div>
+
+
+  <!-- Products -->
+  <div class="bg-white rounded-2xl border border-stone-200 shadow-sm overflow-hidden">
+    <div class="p-4 border-b border-stone-200 bg-stone-50">
+      <h3 class="font-display font-bold text-stone-800">
+        Produktuen laburpena / Resumen por producto
+      </h3>
+      <p class="text-xs text-stone-500 mt-1">
+        Amaitutako eskaeretan benetan saldutakoa / Ventas reales de pedidos completados
+      </p>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-sm min-w-[650px]">
+        <thead class="bg-stone-100 text-stone-600 text-xs uppercase">
+          <tr>
+            <th class="p-3.5">Produktua / Producto</th>
+            <th class="p-3.5">Kopurua / Cantidad</th>
+            <th class="p-3.5">Eskaerak / Pedidos</th>
+            <th class="p-3.5 text-right">Fakturazioa / Facturación</th>
+          </tr>
+        </thead>
+        <tbody id="statsProductsTable" class="divide-y divide-stone-100"></tbody>
+      </table>
+    </div>
+  </div>
+
+
+  <!-- Delivery + contacts -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+
+    <div class="bg-white rounded-2xl border border-stone-200 shadow-sm p-5">
+      <h3 class="font-display font-bold text-stone-800 mb-4">
+        Banaketa / Entregas
+      </h3>
+      <div id="statsDelivery" class="space-y-3"></div>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-stone-200 shadow-sm p-5">
+      <h3 class="font-display font-bold text-stone-800 mb-4">
+        Harreman pertsonak / Personas de contacto
+      </h3>
+      <div id="statsContacts" class="space-y-3"></div>
+    </div>
+
+  </div>
+
+</div>
     </section>
 
   </main>
@@ -1050,6 +1190,7 @@
         orders = data ? Object.values(data) : [];
         renderAdminOrders();
         renderHarvestSummary();
+        renderStatistics();
       }, error => {
         console.error('Eskaerak listener error:', error);
       });
@@ -1186,6 +1327,7 @@
         renderHarvestSummary();
         renderAdminCatalog();
         renderContactsAdmin();
+        renderStatistics();
       } else {
         adminView.classList.add('hidden');
         storeView.classList.remove('hidden');
@@ -1461,17 +1603,19 @@
     function switchAdminTab(tab) {
       currentAdminTab = tab;
       const tabs = {
-        orders: document.getElementById('adminOrdersTab'),
-        harvest: document.getElementById('adminHarvestTab'),
-        catalog: document.getElementById('adminCatalogTab'),
-        contacts: document.getElementById('adminContactsTab')
-      };
+  orders: document.getElementById('adminOrdersTab'),
+  harvest: document.getElementById('adminHarvestTab'),
+  catalog: document.getElementById('adminCatalogTab'),
+  contacts: document.getElementById('adminContactsTab'),
+  stats: document.getElementById('adminStatsTab')
+};
       const buttons = {
-        orders: document.getElementById('tabBtnOrders'),
-        harvest: document.getElementById('tabBtnHarvest'),
-        catalog: document.getElementById('tabBtnCatalog'),
-        contacts: document.getElementById('tabBtnContacts')
-      };
+  orders: document.getElementById('tabBtnOrders'),
+  harvest: document.getElementById('tabBtnHarvest'),
+  catalog: document.getElementById('tabBtnCatalog'),
+  contacts: document.getElementById('tabBtnContacts'),
+  stats: document.getElementById('tabBtnStats')
+};
 
       Object.values(tabs).forEach(el => el && el.classList.add('hidden'));
       Object.values(buttons).forEach(btn => {
@@ -1485,6 +1629,7 @@
       if (tab === 'harvest') renderHarvestSummary();
       if (tab === 'catalog') renderAdminCatalog();
       if (tab === 'contacts') renderContactsAdmin();
+      if (tab === 'stats') renderStatistics();
     }
 
     function renderContactsAdmin() {
@@ -2211,6 +2356,443 @@ const newOrderId = `ESK-${stamp}-${randomPart}`;
       }
     }
 
+    // ------------------------------------------------------
+//  ESTATISTIKAK
+// ------------------------------------------------------
+
+function startOfDay(date) {
+  const d = new Date(date);
+  d.setHours(0, 0, 0, 0);
+  return d;
+}
+
+function endOfDay(date) {
+  const d = new Date(date);
+  d.setHours(23, 59, 59, 999);
+  return d;
+}
+
+function getStatsRange() {
+  const type = document.getElementById('statsPeriod')?.value || 'month';
+  const now = new Date();
+
+  let from;
+  let to;
+
+  if (type === 'today') {
+    from = startOfDay(now);
+    to = endOfDay(now);
+  }
+
+  else if (type === 'week') {
+    from = startOfDay(now);
+
+    // Monday as first day
+    const day = from.getDay();
+    const diff = day === 0 ? 6 : day - 1;
+    from.setDate(from.getDate() - diff);
+
+    to = endOfDay(now);
+  }
+
+  else if (type === 'month') {
+    from = new Date(now.getFullYear(), now.getMonth(), 1);
+    to = endOfDay(now);
+  }
+
+  else if (type === 'year') {
+    from = new Date(now.getFullYear(), 0, 1);
+    to = endOfDay(now);
+  }
+
+  else {
+    const fromValue = document.getElementById('statsDateFrom')?.value;
+    const toValue = document.getElementById('statsDateTo')?.value;
+
+    from = fromValue
+      ? startOfDay(new Date(fromValue + 'T00:00:00'))
+      : new Date(0);
+
+    to = toValue
+      ? endOfDay(new Date(toValue + 'T00:00:00'))
+      : endOfDay(now);
+  }
+
+  return { from, to };
+}
+
+
+function handleStatsPeriodChange() {
+  const type = document.getElementById('statsPeriod').value;
+  const custom = document.getElementById('statsCustomDates');
+
+  custom.classList.toggle('hidden', type !== 'custom');
+
+  renderStatistics();
+}
+
+
+function dateInsideRange(value, from, to) {
+  if (!value) return false;
+
+  const d = new Date(value);
+
+  if (isNaN(d.getTime())) return false;
+
+  return d >= from && d <= to;
+}
+
+
+function getStatsItemAmount(item) {
+  if (!item) return 0;
+
+  const price = Number(item.price || 0);
+
+  if (item.priceType === 'ud_kg') {
+    const weight =
+      item.realWeight !== null &&
+      item.realWeight !== undefined
+        ? Number(item.realWeight)
+        : 0;
+
+    return weight * price;
+  }
+
+  if (item.priceType === 'lote') {
+    const packSize = Number(item.packSize || 1);
+    return (Number(item.qty || 0) / packSize) * price;
+  }
+
+  if (item.unitType === 'kg') {
+    const qty =
+      item.realWeight !== null &&
+      item.realWeight !== undefined
+        ? Number(item.realWeight)
+        : Number(item.qty || 0);
+
+    return qty * price;
+  }
+
+  return Number(item.qty || 0) * price;
+}
+
+
+function formatStatsQuantity(data) {
+  const parts = [];
+
+  if (data.units > 0)
+    parts.push(`${formatStatsNumber(data.units)} ud`);
+
+  if (data.kg > 0)
+    parts.push(`${formatStatsNumber(data.kg)} kg`);
+
+  if (data.otherQty > 0)
+    parts.push(`${formatStatsNumber(data.otherQty)} ${data.otherUnit || ''}`);
+
+  return parts.length ? parts.join(' · ') : '—';
+}
+
+
+function formatStatsNumber(value) {
+  return Number(value || 0).toLocaleString('es-ES', {
+    maximumFractionDigits: 2
+  });
+}
+
+
+function formatStatsMoney(value) {
+  return Number(value || 0).toLocaleString('es-ES', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  }) + ' €';
+}
+
+
+function renderStatistics() {
+  const statsTab = document.getElementById('adminStatsTab');
+
+  // The tab may not exist yet while HTML is loading
+  if (!statsTab) return;
+
+  const { from, to } = getStatsRange();
+
+  // Orders received during selected period
+  const receivedOrders = orders.filter(order =>
+    dateInsideRange(order.createdAt, from, to)
+  );
+
+  // Real sales: orders completed during selected period
+  const completedOrders = orders.filter(order =>
+    order.status === 'Completado' &&
+    dateInsideRange(order.completedAt || order.createdAt, from, to)
+  );
+
+  const revenue = completedOrders.reduce(
+    (sum, order) => sum + Number(order.total || 0),
+    0
+  );
+
+  const average =
+    completedOrders.length > 0
+      ? revenue / completedOrders.length
+      : 0;
+
+  // Unique customers based on email.
+  // We use received orders because these are customers who ordered in this period.
+  const customerEmails = new Set(
+    receivedOrders
+      .map(order => (order.email || '').trim().toLowerCase())
+      .filter(Boolean)
+  );
+
+  document.getElementById('statOrders').textContent =
+    receivedOrders.length;
+
+  document.getElementById('statCompleted').textContent =
+    completedOrders.length;
+
+  document.getElementById('statRevenue').textContent =
+    formatStatsMoney(revenue);
+
+  document.getElementById('statAverage').textContent =
+    formatStatsMoney(average);
+
+  document.getElementById('statCustomers').textContent =
+    customerEmails.size;
+
+
+  // Period label
+  const periodLabel = document.getElementById('statsPeriodLabel');
+
+  if (periodLabel) {
+    periodLabel.textContent =
+      `${from.toLocaleDateString('es-ES')} — ${to.toLocaleDateString('es-ES')}`;
+  }
+
+
+  // ------------------------------------------------------
+  // PRODUCT STATISTICS
+  // ------------------------------------------------------
+
+  const productStats = {};
+
+  completedOrders.forEach(order => {
+
+    (order.items || []).forEach(item => {
+
+      const key = item.id || item.name;
+
+      if (!productStats[key]) {
+        productStats[key] = {
+          name: item.name || 'Produktua',
+          units: 0,
+          kg: 0,
+          otherQty: 0,
+          otherUnit: '',
+          revenue: 0,
+          orderIds: new Set()
+        };
+      }
+
+      const stat = productStats[key];
+
+      stat.revenue += getStatsItemAmount(item);
+      stat.orderIds.add(order.id);
+
+      if (item.priceType === 'ud_kg') {
+
+        // Number of pieces ordered
+        stat.units += Number(item.qty || 0);
+
+        // Actual final weight
+        if (item.realWeight !== null &&
+            item.realWeight !== undefined) {
+          stat.kg += Number(item.realWeight || 0);
+        }
+
+      }
+
+      else if (item.unitType === 'kg') {
+
+        const realQty =
+          item.realWeight !== null &&
+          item.realWeight !== undefined
+            ? Number(item.realWeight)
+            : Number(item.qty || 0);
+
+        stat.kg += realQty;
+
+      }
+
+      else if (item.priceType === 'lote') {
+
+        stat.otherQty += Number(item.qty || 0);
+        stat.otherUnit = item.packUnit || item.unitType || 'lote';
+
+      }
+
+      else {
+
+        stat.units += Number(item.qty || 0);
+
+      }
+
+    });
+
+  });
+
+
+  const productRows = Object.values(productStats)
+    .sort((a, b) => b.revenue - a.revenue);
+
+  const productTable =
+    document.getElementById('statsProductsTable');
+
+  if (productRows.length === 0) {
+
+    productTable.innerHTML = `
+      <tr>
+        <td colspan="4"
+            class="p-8 text-center text-stone-400">
+          Ez dago amaitutako salmentarik epe honetan /
+          No hay ventas completadas en este periodo.
+        </td>
+      </tr>
+    `;
+
+  } else {
+
+    productTable.innerHTML = productRows.map((p, index) => `
+      <tr class="hover:bg-stone-50">
+        <td class="p-3.5">
+          <div class="flex items-center gap-2">
+            ${index < 3 ? `
+              <span class="w-6 h-6 rounded-full bg-brand-100 text-brand-800
+                           flex items-center justify-center text-[10px] font-extrabold">
+                ${index + 1}
+              </span>
+            ` : ''}
+            <span class="font-semibold text-stone-800">${p.name}</span>
+          </div>
+        </td>
+
+        <td class="p-3.5 font-medium text-stone-700">
+          ${formatStatsQuantity(p)}
+        </td>
+
+        <td class="p-3.5 text-stone-600">
+          ${p.orderIds.size}
+        </td>
+
+        <td class="p-3.5 text-right font-bold text-brand-800">
+          ${formatStatsMoney(p.revenue)}
+        </td>
+      </tr>
+    `).join('');
+
+  }
+
+
+  // ------------------------------------------------------
+  // DELIVERY METHODS
+  // ------------------------------------------------------
+
+  const deliveryCounts = {};
+
+  completedOrders.forEach(order => {
+    const method = order.deliveryMethod || 'Bestea / Otro';
+    deliveryCounts[method] =
+      (deliveryCounts[method] || 0) + 1;
+  });
+
+  const deliveryContainer =
+    document.getElementById('statsDelivery');
+
+  const deliveryRows = Object.entries(deliveryCounts)
+    .sort((a, b) => b[1] - a[1]);
+
+  if (!deliveryRows.length) {
+
+    deliveryContainer.innerHTML =
+      '<div class="text-sm text-stone-400">Daturik ez / Sin datos</div>';
+
+  } else {
+
+    deliveryContainer.innerHTML =
+      deliveryRows.map(([name, count]) => {
+
+        const percent =
+          completedOrders.length
+            ? Math.round((count / completedOrders.length) * 100)
+            : 0;
+
+        return `
+          <div>
+            <div class="flex justify-between text-sm mb-1">
+              <span class="font-medium text-stone-700">${name}</span>
+              <span class="font-bold text-stone-900">
+                ${count} · ${percent}%
+              </span>
+            </div>
+
+            <div class="h-2 bg-stone-100 rounded-full overflow-hidden">
+              <div class="h-full bg-brand-600 rounded-full"
+                   style="width:${percent}%"></div>
+            </div>
+          </div>
+        `;
+
+      }).join('');
+
+  }
+
+
+  // ------------------------------------------------------
+  // CONTACT PERSONS
+  // ------------------------------------------------------
+
+  const contactCounts = {};
+
+  completedOrders.forEach(order => {
+
+    if (order.deliveryMethod !== 'Entrega en Mano')
+      return;
+
+    const contact =
+      order.contactPerson || 'Zehaztu gabe / Sin especificar';
+
+    contactCounts[contact] =
+      (contactCounts[contact] || 0) + 1;
+
+  });
+
+  const contactsContainer =
+    document.getElementById('statsContacts');
+
+  const contactRows = Object.entries(contactCounts)
+    .sort((a, b) => b[1] - a[1]);
+
+  if (!contactRows.length) {
+
+    contactsContainer.innerHTML =
+      '<div class="text-sm text-stone-400">Daturik ez / Sin datos</div>';
+
+  } else {
+
+    contactsContainer.innerHTML =
+      contactRows.map(([name, count]) => `
+        <div class="flex items-center justify-between
+                    p-3 bg-stone-50 border border-stone-200 rounded-xl">
+          <span class="font-semibold text-stone-700">${name}</span>
+          <span class="font-extrabold text-stone-900">${count}</span>
+        </div>
+      `).join('');
+
+  }
+
+  lucide.createIcons();
+}
+    
     window.addEventListener('DOMContentLoaded', () => {
       lucide.createIcons();
       setLanguage(currentLang);
