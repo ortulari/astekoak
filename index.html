@@ -3549,17 +3549,23 @@ function formatStatsQuantity(data) {
 
 
 function formatStatsNumber(value) {
-  return Number(value || 0).toLocaleString('currentLang === 'eu' ? 'eu-ES' : 'es-ES'', {
-    maximumFractionDigits: 2
-  });
+  return Number(value || 0).toLocaleString(
+    currentLang === 'eu' ? 'eu-ES' : 'es-ES',
+    {
+      maximumFractionDigits: 2
+    }
+  );
 }
 
 
 function formatStatsMoney(value) {
-  return Number(value || 0).toLocaleString('es-ES', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  }) + ' €';
+  return Number(value || 0).toLocaleString(
+    currentLang === 'eu' ? 'eu-ES' : 'es-ES',
+    {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }
+  ) + ' €';
 }
 
     function setStatsSort(field) {
