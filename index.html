@@ -1496,6 +1496,15 @@ noData: "Sin datos"
     || '';
 }
 
+function getOrderItemName(item) {
+  if (!item) return '';
+
+  return item.name?.[currentLang]
+    || item.name?.eu
+    || item.name?.es
+    || '';
+}
+    
 function getProductTag(product) {
   if (!product) return '';
 
@@ -2032,17 +2041,21 @@ const displayTag = getProductTag(prod);
       const totals = {}; // { itemKey: { name, qty, unitType } }
       activeOrders.forEach(ord => {
         ord.items.forEach(item => {
-          const key = item.name;
-          if (!totals[key]) {
-            totals[key] = { name: item.name, qty: 0, unitType: item.unitType || 'ud' };
-          }
-          totals[key].qty += Number(item.qty) || 0;
-        });
-      });
+          const key = item.id;
+
+if (!totals[key]) {
+  totals[key] = {
+    item,
+    qty: 0,
+    unitType: item.unitType || 'ud'
+  };
+}
+
+totals[key].qty += Number(item.qty) || 0;
 
       container.innerHTML = Object.values(totals).map(item => `
         <div class="py-3 flex items-center justify-between">
-          <span class="font-medium text-stone-800 text-sm">${item.name}</span>
+          <span class="font-medium text-stone-800 text-sm">${getOrderItemName(item.item)}</span>
           <span class="font-extrabold text-brand-800 text-base bg-brand-50 px-3 py-1 rounded-lg border border-brand-200">
             ${item.qty.toFixed(item.unitType === 'kg' ? 1 : 0)} ${item.unitType}
           </span>
@@ -2499,18 +2512,25 @@ database.ref('kategoriak').on('value', snapshot => {
       submitBtn.disabled = true;
 
       const orderItems = Object.keys(cart).map(id => {
-        const p = products.find(prod => prod.id === id);
-        return {
-          id: p ? p.id : id,
-nameEu: p ? p.nameEu : 'Produktua',
-nameEs: p ? p.nameEs : 'Producto',
-qty: Number(cart[id]) || 0,
-          unitType: p ? (p.priceType === 'lote' ? (p.packUnit || 'lote') : (p.priceType === 'ud_kg' ? 'ud' : (p.unitType || 'ud'))) : 'ud',
-          price: p ? Number(p.price) : 0, priceType: p ? (p.priceType || p.unitType || 'ud') : 'ud',
-          packSize: p ? (Number(p.packSize) || 1) : 1, packUnit: p ? (p.packUnit || p.unitType || 'ud') : 'ud',
-          realWeight: null
-        };
-      });
+  const p = products.find(prod => prod.id === id);
+
+  return {
+    id: p ? p.id : id,
+
+    name: {
+      eu: p?.name?.eu || '',
+      es: p?.name?.es || ''
+    },
+
+    qty: Number(cart[id]) || 0,
+    unitType: p ? (p.priceType === 'lote' ? (p.packUnit || 'lote') : (p.priceType === 'ud_kg' ? 'ud' : (p.unitType || 'ud'))) : 'ud',
+    price: p ? Number(p.price) : 0,
+    priceType: p ? (p.priceType || p.unitType || 'ud') : 'ud',
+    packSize: p ? (Number(p.packSize) || 1) : 1,
+    packUnit: p ? (p.packUnit || p.unitType || 'ud') : 'ud',
+    realWeight: null
+  };
+});
 
       const now = new Date();
 const stamp =
@@ -2544,7 +2564,9 @@ const newOrderId = `ESK-${stamp}-${randomPart}`;
       const modal = document.getElementById('orderSuccessModal');
       const details = document.getElementById('successOrderDetails');
       
-      let itemsList = (order.items || []).map(i => `• ${i.name}: ${i.qty} ${i.unitType}${i.priceType === 'ud_kg' ? ' (pisatu ondoren kobratu)' : ''}`).join('<br>');
+      let itemsList = (order.items || []).map(i =>
+  `• ${getOrderItemName(i)}: ${i.qty} ${i.unitType}${i.priceType === 'ud_kg' ? ' (pisatu ondoren kobratu)' : ''}`
+).join('<br>');
       const hasPendingWeight = (order.items || []).some(i => i.priceType === 'ud_kg' && (i.realWeight === null || i.realWeight === undefined));
       
       details.innerHTML = `
@@ -2658,7 +2680,7 @@ const newOrderId = `ESK-${stamp}-${randomPart}`;
                     <div class="flex items-center justify-between p-2 rounded-lg hover:bg-stone-50 border border-stone-100 transition">
                       <div class="flex items-center gap-2.5">
                         <input type="checkbox" class="w-4 h-4 text-brand-600 rounded border-stone-300 focus:ring-brand-500">
-                        <span class="font-medium text-stone-800 text-sm">${item.name}</span>
+                        <span class="font-medium text-stone-800 text-sm">${getOrderItemName(item)}</span>
                       </div>
                       ${(item.unitType === 'kg' || item.priceType === 'ud_kg') ? `
                         <div class="flex items-center gap-2">
@@ -2755,7 +2777,8 @@ const newOrderId = `ESK-${stamp}-${randomPart}`;
       const item = order && order.items ? order.items[itemIdx] : null;
       if (!item) return;
       pendingRemoval = { orderId, itemIdx };
-      document.getElementById('removeItemName').textContent = `${item.name} — ${item.qty} ${item.unitType}`;
+      document.getElementById('removeItemName').textContent =
+  `${getOrderItemName(item)} — ${item.qty} ${item.unitType}`;
       document.getElementById('removeItemReason').value = 'El cliente lo cancela o se ha equivocado';
       document.getElementById('removeOtherReason').value = '';
       toggleOtherRemovalReason();
@@ -3123,11 +3146,11 @@ function renderStatistics() {
 
     (order.items || []).forEach(item => {
 
-      const key = item.id || item.name;
+      const key = item.id 
 
       if (!productStats[key]) {
         productStats[key] = {
-          name: item.name || 'Produktua',
+          item,
           units: 0,
           kg: 0,
           otherQty: 0,
@@ -3191,11 +3214,11 @@ productRows.sort((a, b) => {
   let result = 0;
 
   if (statsSortField === 'name') {
-    result = (a.name || '').localeCompare(
-      b.name || '',
-      currentLang === 'eu' ? 'eu' : 'es'
-    );
-  }
+  result = getOrderItemName(a.item).localeCompare(
+    getOrderItemName(b.item),
+    currentLang === 'eu' ? 'eu' : 'es'
+  );
+}
 
   else if (statsSortField === 'quantity') {
     result =
@@ -3249,7 +3272,7 @@ updateStatsSortIndicators();
                 ${index + 1}
               </span>
             ` : ''}
-            <span class="font-semibold text-stone-800">${p.name}</span>
+            <span class="font-semibold text-stone-800">${getOrderItemName(p.item)}</span>
           </div>
         </td>
 
