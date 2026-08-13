@@ -293,7 +293,38 @@
         <button onclick="resetSearch()" class="px-4 py-2 bg-stone-200 text-stone-700 rounded-xl text-sm font-medium hover:bg-stone-300 transition" id="emptyStateBtn">Ikusi produktu guztiak</button>
       </div>
 
+<!-- TAB CONTENT 6: TESTUAK -->
+<div id="adminTextsTab" class="hidden space-y-5">
 
+  <div class="bg-white rounded-2xl border border-stone-200 shadow-sm overflow-hidden">
+
+    <div class="p-5 border-b border-stone-200 bg-stone-50">
+      <h3 id="textsTitle"
+          class="font-display font-bold text-stone-900 text-lg">
+        Testuak eta itzulpenak
+      </h3>
+
+      <p id="textsDesc"
+         class="text-xs text-stone-500 mt-1">
+        Webguneko testu orokorrak euskaraz eta gaztelaniaz editatu.
+      </p>
+    </div>
+
+    <div id="textsAdminList"
+         class="divide-y divide-stone-200">
+    </div>
+
+    <div class="p-5 flex justify-end bg-stone-50 border-t border-stone-200">
+      <button id="textsSaveBtn"
+              onclick="saveTextsAdmin()"
+              class="px-5 py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl text-sm">
+        Gorde aldaketak
+      </button>
+    </div>
+
+  </div>
+
+</div>
 
     </section>
 
@@ -349,6 +380,12 @@
   <i data-lucide="chart-no-axes-combined" class="w-4 h-4"></i>
   <span id="tabLabelStats">Estatistikak</span>
   </button>
+        <button onclick="switchAdminTab('texts')"
+        id="tabBtnTexts"
+        class="pb-3 border-b-2 border-transparent text-stone-500 hover:text-stone-800 flex items-center gap-2">
+  <i data-lucide="languages" class="w-4 h-4"></i>
+  <span id="tabLabelTexts">Testuak</span>
+</button>
       </div>
 
       <!-- TAB CONTENT 1: ORDERS MANAGEMENT -->
@@ -519,167 +556,199 @@
       <!-- TAB CONTENT 5: STATISTICS -->
 <div id="adminStatsTab" class="hidden space-y-5">
 
-  <!-- Period filter -->
   <div class="bg-white p-4 rounded-2xl border border-stone-200 shadow-sm">
     <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
+
       <div>
-        <h3 class="font-display font-bold text-stone-900 text-lg">
-          Estatistikak / Estadísticas
+        <h3 id="statsTitle" class="font-display font-bold text-stone-900 text-lg">
+          Estatistikak
         </h3>
-        <p class="text-xs text-stone-500 mt-1">
-          Eskaeren eta salmenten laburpena / Resumen de pedidos y ventas
+
+        <p id="statsSubtitle" class="text-xs text-stone-500 mt-1">
+          Eskaeren eta salmenten laburpena
         </p>
       </div>
 
       <div class="flex flex-wrap items-end gap-3">
+
         <div>
-          <label class="block text-[11px] font-semibold text-stone-500 mb-1">
-            Epea / Periodo
+          <label id="statsPeriodLabelText"
+                 class="block text-[11px] font-semibold text-stone-500 mb-1">
+            Epea
           </label>
+
           <select id="statsPeriod"
                   onchange="handleStatsPeriodChange()"
                   class="px-3 py-2 border border-stone-300 bg-white rounded-xl text-sm">
-            <option value="today">Gaur / Hoy</option>
-            <option value="week">Aste honetan / Esta semana</option>
-            <option value="month" selected>Hilabete honetan / Este mes</option>
-            <option value="year">Urte honetan / Este año</option>
-            <option value="custom">Pertsonalizatua / Personalizado</option>
+
+            <option id="statsPeriodToday" value="today">Gaur</option>
+            <option id="statsPeriodWeek" value="week">Aste honetan</option>
+            <option id="statsPeriodMonth" value="month" selected>Hilabete honetan</option>
+            <option id="statsPeriodYear" value="year">Urte honetan</option>
+            <option id="statsPeriodCustom" value="custom">Pertsonalizatua</option>
+
           </select>
         </div>
 
         <div id="statsCustomDates" class="hidden flex flex-wrap gap-2">
+
           <div>
-            <label class="block text-[11px] font-semibold text-stone-500 mb-1">
-              Hasiera / Desde
+            <label id="statsFromLabel"
+                   class="block text-[11px] font-semibold text-stone-500 mb-1">
+              Hasiera
             </label>
-            <input id="statsDateFrom" type="date"
+
+            <input id="statsDateFrom"
+                   type="date"
                    onchange="renderStatistics()"
                    class="px-3 py-2 border border-stone-300 rounded-xl text-sm">
           </div>
 
           <div>
-            <label class="block text-[11px] font-semibold text-stone-500 mb-1">
-              Amaiera / Hasta
+            <label id="statsToLabel"
+                   class="block text-[11px] font-semibold text-stone-500 mb-1">
+              Amaiera
             </label>
-            <input id="statsDateTo" type="date"
+
+            <input id="statsDateTo"
+                   type="date"
                    onchange="renderStatistics()"
                    class="px-3 py-2 border border-stone-300 rounded-xl text-sm">
           </div>
+
         </div>
       </div>
     </div>
 
+    
+
+    
     <div id="statsPeriodLabel"
          class="text-xs text-brand-700 font-semibold mt-3"></div>
   </div>
 
 
-  <!-- Main figures -->
   <div class="grid grid-cols-2 lg:grid-cols-5 gap-3">
 
     <div class="bg-white p-4 rounded-2xl border border-stone-200 shadow-sm">
-      <div class="text-xs text-stone-500">Eskaerak / Pedidos</div>
+      <div id="statOrdersLabel" class="text-xs text-stone-500">Eskaerak</div>
       <div id="statOrders" class="text-2xl font-extrabold text-stone-900 mt-1">0</div>
     </div>
 
     <div class="bg-white p-4 rounded-2xl border border-stone-200 shadow-sm">
-      <div class="text-xs text-stone-500">Osatuak / Completados</div>
+      <div id="statCompletedLabel" class="text-xs text-stone-500">Osatuak</div>
       <div id="statCompleted" class="text-2xl font-extrabold text-stone-900 mt-1">0</div>
     </div>
 
     <div class="bg-brand-50 p-4 rounded-2xl border border-brand-200 shadow-sm">
-      <div class="text-xs text-brand-700">Fakturazioa / Facturación</div>
+      <div id="statRevenueLabel" class="text-xs text-brand-700">Salmentak</div>
       <div id="statRevenue" class="text-2xl font-extrabold text-brand-800 mt-1">0,00 €</div>
     </div>
 
     <div class="bg-white p-4 rounded-2xl border border-stone-200 shadow-sm">
-      <div class="text-xs text-stone-500">Batez bestekoa / Ticket medio</div>
+      <div id="statAverageLabel" class="text-xs text-stone-500">Batez besteko erosketa</div>
       <div id="statAverage" class="text-2xl font-extrabold text-stone-900 mt-1">0,00 €</div>
     </div>
 
     <div class="bg-white p-4 rounded-2xl border border-stone-200 shadow-sm col-span-2 lg:col-span-1">
-      <div class="text-xs text-stone-500">Bezeroak / Clientes</div>
+      <div id="statCustomersLabel" class="text-xs text-stone-500">Bezeroak</div>
       <div id="statCustomers" class="text-2xl font-extrabold text-stone-900 mt-1">0</div>
     </div>
 
   </div>
 
 
-  <!-- Products -->
   <div class="bg-white rounded-2xl border border-stone-200 shadow-sm overflow-hidden">
+
     <div class="p-4 border-b border-stone-200 bg-stone-50">
-      <h3 class="font-display font-bold text-stone-800">
-        Produktuen laburpena / Resumen por producto
+      <h3 id="statsProductSummary"
+          class="font-display font-bold text-stone-800">
+        Produktuen laburpena
       </h3>
-      <p class="text-xs text-stone-500 mt-1">
-        Amaitutako eskaeretan benetan saldutakoa / Ventas reales de pedidos completados
+
+      <p id="statsProductSummaryDesc"
+         class="text-xs text-stone-500 mt-1">
+        Amaitutako eskaeretan benetan saldutakoa
       </p>
     </div>
 
     <div class="overflow-x-auto">
       <table class="w-full text-left text-sm min-w-[650px]">
+
         <thead class="bg-stone-100 text-stone-600 text-xs uppercase">
           <tr>
+
             <th class="p-3.5">
-  <button onclick="setStatsSort('name')" class="flex items-center gap-1 font-bold hover:text-brand-700">
-    Produktua / Producto
-    <span id="statsSortName">↕</span>
-  </button>
-</th>
+              <button onclick="setStatsSort('name')"
+                      class="flex items-center gap-1 font-bold hover:text-brand-700">
+                <span id="statsProductColumn">Produktua</span>
+                <span id="statsSortName">↕</span>
+              </button>
+            </th>
 
-<th class="p-3.5">
-  <button onclick="setStatsSort('quantity')" class="flex items-center gap-1 font-bold hover:text-brand-700">
-    Kopurua / Cantidad
-    <span id="statsSortQuantity">↕</span>
-  </button>
-</th>
+            <th class="p-3.5">
+              <button onclick="setStatsSort('quantity')"
+                      class="flex items-center gap-1 font-bold hover:text-brand-700">
+                <span id="statsQuantityColumn">Kopurua</span>
+                <span id="statsSortQuantity">↕</span>
+              </button>
+            </th>
 
-<th class="p-3.5">
-  <button onclick="setStatsSort('orders')" class="flex items-center gap-1 font-bold hover:text-brand-700">
-    Eskaerak / Pedidos
-    <span id="statsSortOrders">↕</span>
-  </button>
-</th>
+            <th class="p-3.5">
+              <button onclick="setStatsSort('orders')"
+                      class="flex items-center gap-1 font-bold hover:text-brand-700">
+                <span id="statsOrdersColumn">Eskaerak</span>
+                <span id="statsSortOrders">↕</span>
+              </button>
+            </th>
 
-<th class="p-3.5 text-right">
-  <button onclick="setStatsSort('revenue')" class="ml-auto flex items-center gap-1 font-bold hover:text-brand-700">
-    Fakturazioa / Facturación
-    <span id="statsSortRevenue">↓</span>
-  </button>
-</th>
+            <th class="p-3.5 text-right">
+              <button onclick="setStatsSort('revenue')"
+                      class="ml-auto flex items-center gap-1 font-bold hover:text-brand-700">
+                <span id="statsRevenueColumn">Salmentak</span>
+                <span id="statsSortRevenue">↓</span>
+              </button>
+            </th>
+
           </tr>
         </thead>
-        <tbody id="statsProductsTable" class="divide-y divide-stone-100"></tbody>
+
+        <tbody id="statsProductsTable"
+               class="divide-y divide-stone-100">
+        </tbody>
+
       </table>
     </div>
   </div>
 
 
-  <!-- Delivery + contacts -->
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
 
     <div class="bg-white rounded-2xl border border-stone-200 shadow-sm p-5">
-      <h3 class="font-display font-bold text-stone-800 mb-4">
-        Banaketa / Entregas
+      <h3 id="statsDeliveryTitle"
+          class="font-display font-bold text-stone-800 mb-4">
+        Banaketa
       </h3>
+
       <div id="statsDelivery" class="space-y-3"></div>
     </div>
 
     <div class="bg-white rounded-2xl border border-stone-200 shadow-sm p-5">
+
       <h3 id="statsContactsTitle"
-    class="font-display font-bold text-stone-800">
-  Harremanetarako pertsonak
-</h3>
+          class="font-display font-bold text-stone-800 mb-4">
+        Harreman-pertsonak
+      </h3>
+
       <div id="statsContacts" class="space-y-3"></div>
     </div>
 
   </div>
 
 </div>
-    </section>
 
   </main>
-
+ 
   <!-- Footer / Baserritar access -->
   <footer class="border-t border-stone-200 bg-white mt-6">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex items-center justify-center gap-3 text-xs text-stone-400">
@@ -1116,11 +1185,18 @@
         // Administrazio panela
 adminTitle: "Baserritarraren panela",
 adminSubtitle: "Eskaerak, uzta, katalogoa eta banaketa kudeatu",
+adminAddProduct: "Gehitu produktua",
+adminExport: "Esportatu",
 tabOrders: "Eskaerak",
 tabHarvest: "Uzta prestatu",
 tabCatalog: "Katalogoa",
 tabContacts: "Harremanak",
 tabStats: "Estatistikak",
+        tabTexts: "Testuak",
+textsTitle: "Testuak eta itzulpenak",
+textsDesc: "Webguneko testu orokorrak euskaraz eta gaztelaniaz editatu.",
+textsSave: "Gorde aldaketak",
+textsSaved: "Testuak gordeta",
 
         // Eskaerak
 filterStatus: "Egoera:",
@@ -1244,14 +1320,21 @@ noData: "Daturik ez"
         btnContinueCheckout: "Continuar con Datos de Entrega",
         checkoutModalTitle: "Datos para la Preparación",
         checkoutModalSubtitle: "Elige la modalidad de entrega y completa tus datos",
-        // Administrazio panela
+        // Administrazio panela_gazt
 adminTitle: "Panel del agricultor",
 adminSubtitle: "Gestiona pedidos, cosecha, catálogo y entregas",
+adminAddProduct: "Añadir producto",
+adminExport: "Exportar",
 tabOrders: "Pedidos",
 tabHarvest: "Preparar cosecha",
 tabCatalog: "Catálogo",
 tabContacts: "Contactos",
 tabStats: "Estadísticas",
+        tabTexts: "Textos",
+textsTitle: "Textos y traducciones",
+textsDesc: "Edita los textos generales de la web en euskera y castellano.",
+textsSave: "Guardar cambios",
+textsSaved: "Textos guardados",
 
 // Eskaerak
 filterStatus: "Estado:",
@@ -1344,6 +1427,48 @@ noData: "Sin datos"
       }
     };
 
+const DEFAULT_I18N = JSON.parse(JSON.stringify(I18N));
+
+const EDITABLE_TEXT_KEYS = [
+  'brandName',
+  'freshBadge',
+  'brandSubtitle',
+
+  'heroBadge',
+  'heroTitle',
+  'heroDesc',
+  'noMinOrder',
+  'pickupDelivery',
+  'freshnessGuarantee',
+  'searchPlaceholder',
+
+  'emptyStateTitle',
+  'emptyStateDesc',
+  'emptyStateBtn',
+
+  'cartTitle',
+  'cartSubtitle',
+  'lblSubtotal',
+  'lblTotal',
+  'lblNoticePrice',
+  'btnContinueCheckout',
+
+  'checkoutModalTitle',
+  'checkoutModalSubtitle',
+  'labelName',
+  'labelDelivery',
+  'labelContactPerson',
+  'labelNotes',
+  'modalNotice',
+  'btnSubmitSystem',
+
+  'adminTitle',
+  'adminSubtitle'
+];
+
+let customTexts = {};
+
+    
     // Contact Persons / Team Members
     const DEFAULT_CONTACTS = [
       { id: 'c1', name: 'Jon', zone: 'Bilbao / Durangaldea', phone: '611 222 333' },
@@ -1670,6 +1795,7 @@ if (currentView === 'admin') {
   renderAdminCategories();
   renderContactsAdmin();
   renderStatistics();
+  renderTextsAdmin();
 }
 
 }
@@ -1719,12 +1845,15 @@ if (currentView === 'admin') {
 document.getElementById('adminTitleBadge').innerText = t.adminTitle;
 document.getElementById('adminHeaderTitle').innerText = t.adminTitle;
 document.getElementById('adminHeaderSubtitle').innerText = t.adminSubtitle;
+      document.getElementById('btnAdminAddProd').innerText = t.adminAddProduct;
+document.getElementById('btnAdminExport').innerText = t.adminExport;
 
 document.getElementById('tabLabelOrders').innerText = t.tabOrders;
 document.getElementById('tabLabelHarvest').innerText = t.tabHarvest;
 document.getElementById('tabLabelCatalog').innerText = t.tabCatalog;
 document.getElementById('tabLabelContacts').innerText = t.tabContacts;
 document.getElementById('tabLabelStats').innerText = t.tabStats;
+      document.getElementById('tabLabelTexts').innerText = t.tabTexts;
 
 // Kategoriak
 document.getElementById('categoriesTitle').innerText = t.categoriesTitle;
@@ -1764,6 +1893,41 @@ document.getElementById('contactZoneLabel').innerText = t.contactZone;
 document.getElementById('contactAdminZone').placeholder = t.contactZonePlaceholder;
 document.getElementById('contactClearBtn').innerText = t.clear;
 document.getElementById('contactSaveBtn').innerText = t.contactSave;
+      // Estatistikak
+document.getElementById('statsTitle').innerText = t.statsTitle;
+document.getElementById('statsSubtitle').innerText = t.statsSubtitle;
+
+document.getElementById('statsPeriodLabelText').innerText = t.period;
+document.getElementById('statsPeriodToday').innerText = t.today;
+document.getElementById('statsPeriodWeek').innerText = t.thisWeek;
+document.getElementById('statsPeriodMonth').innerText = t.thisMonth;
+document.getElementById('statsPeriodYear').innerText = t.thisYear;
+document.getElementById('statsPeriodCustom').innerText = t.custom;
+
+document.getElementById('statsFromLabel').innerText = t.from;
+document.getElementById('statsToLabel').innerText = t.to;
+
+document.getElementById('statOrdersLabel').innerText = t.orders;
+document.getElementById('statCompletedLabel').innerText = t.completed;
+document.getElementById('statRevenueLabel').innerText = t.revenue;
+document.getElementById('statAverageLabel').innerText = t.averageTicket;
+document.getElementById('statCustomersLabel').innerText = t.customers;
+
+document.getElementById('statsProductSummary').innerText = t.productSummary;
+document.getElementById('statsProductSummaryDesc').innerText = t.productSummaryDesc;
+
+document.getElementById('statsProductColumn').innerText = t.catalogProduct;
+document.getElementById('statsQuantityColumn').innerText = t.quantity;
+document.getElementById('statsOrdersColumn').innerText = t.orders;
+document.getElementById('statsRevenueColumn').innerText = t.revenue;
+
+document.getElementById('statsDeliveryTitle').innerText = t.deliveries;
+document.getElementById('statsContactsTitle').innerText = t.contactPersons;
+
+      // Testuak
+document.getElementById('textsTitle').innerText = t.textsTitle;
+document.getElementById('textsDesc').innerText = t.textsDesc;
+document.getElementById('textsSaveBtn').innerText = t.textsSave;
     }
 
     function switchView(view) {
@@ -1904,9 +2068,10 @@ const displayTag = getProductTag(prod);
           <div class="bg-white rounded-2xl border border-stone-200/80 shadow-sm hover:shadow-md transition overflow-hidden flex flex-col justify-between group">
             <div>
               <div class="relative h-44 overflow-hidden bg-stone-100">
-                <img src="${prod.image}" alt="${displayName}">
-                     class="w-full h-full object-cover group-hover:scale-105 transition duration-300"
-                     onerror="this.src='https://placehold.co/600x400/22c55e/ffffff?text=Baratzea'">
+                <img src="${prod.image}"
+     alt="${displayName}"
+     class="w-full h-full object-cover group-hover:scale-105 transition duration-300"
+     onerror="this.src='https://placehold.co/600x400/22c55e/ffffff?text=Baratzea'">
                 ${displayTag ? `
   <span class="absolute top-3 left-3 bg-white/90 backdrop-blur-md text-brand-800 text-[11px] font-bold px-2.5 py-0.5 rounded-full border border-brand-200 shadow-sm">
     ${displayTag}
@@ -2108,14 +2273,16 @@ const displayTag = getProductTag(prod);
   harvest: document.getElementById('adminHarvestTab'),
   catalog: document.getElementById('adminCatalogTab'),
   contacts: document.getElementById('adminContactsTab'),
-  stats: document.getElementById('adminStatsTab')
+  stats: document.getElementById('adminStatsTab'),
+  texts: document.getElementById('adminTextsTab')
 };
       const buttons = {
   orders: document.getElementById('tabBtnOrders'),
   harvest: document.getElementById('tabBtnHarvest'),
   catalog: document.getElementById('tabBtnCatalog'),
   contacts: document.getElementById('tabBtnContacts'),
-  stats: document.getElementById('tabBtnStats')
+  stats: document.getElementById('tabBtnStats'),
+  texts: document.getElementById('tabBtnTexts')
 };
 
       Object.values(tabs).forEach(el => el && el.classList.add('hidden'));
@@ -2127,13 +2294,101 @@ const displayTag = getProductTag(prod);
       if (buttons[tab]) buttons[tab].className = "pb-3 border-b-2 border-brand-600 text-brand-700 font-bold flex items-center gap-2";
 
       if (tab === 'orders') renderAdminOrders();
-      if (tab === 'harvest') renderHarvestSummary();
-      if (tab === 'catalog') renderAdminCatalog();
-      if (tab === 'contacts') renderContactsAdmin();
-      if (tab === 'stats') renderStatistics();
-    }
+if (tab === 'harvest') renderHarvestSummary();
+if (tab === 'catalog') renderAdminCatalog();
+if (tab === 'contacts') renderContactsAdmin();
+if (tab === 'stats') renderStatistics();
+if (tab === 'texts') renderTextsAdmin();
+}
 
-    function renderContactsAdmin() {
+
+// Testuen kudeaketa
+function escapeTextHtml(value = '') {
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
+function renderTextsAdmin() {
+  const container = document.getElementById('textsAdminList');
+  if (!container) return;
+
+  container.innerHTML = EDITABLE_TEXT_KEYS.map(key => `
+    <div class="p-5 grid grid-cols-1 lg:grid-cols-[180px_1fr_1fr] gap-4">
+
+      <div>
+        <div class="text-xs font-bold text-stone-700">
+          ${key}
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-stone-500 mb-1">
+          Euskara
+        </label>
+
+        <textarea
+          data-text-lang="eu"
+          data-text-key="${key}"
+          rows="3"
+          class="w-full px-3 py-2 border border-stone-300 rounded-xl text-sm resize-y">${escapeTextHtml(I18N.eu[key] || '')}</textarea>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-stone-500 mb-1">
+          Castellano
+        </label>
+
+        <textarea
+          data-text-lang="es"
+          data-text-key="${key}"
+          rows="3"
+          class="w-full px-3 py-2 border border-stone-300 rounded-xl text-sm resize-y">${escapeTextHtml(I18N.es[key] || '')}</textarea>
+      </div>
+
+    </div>
+  `).join('');
+}
+
+async function saveTextsAdmin() {
+  if (!auth.currentUser) return;
+
+  const data = {
+    eu: {},
+    es: {}
+  };
+
+  document.querySelectorAll('#textsAdminList [data-text-key]')
+    .forEach(field => {
+      const lang = field.dataset.textLang;
+      const key = field.dataset.textKey;
+
+      data[lang][key] = field.value;
+    });
+
+  try {
+    await database.ref('testuak').set(data);
+
+    showToast(
+      I18N[currentLang].textsSaved,
+      'success'
+    );
+
+  } catch (error) {
+    console.error('Testuak gordetzean errorea:', error);
+
+    showToast(
+      currentLang === 'eu'
+        ? 'Ezin izan dira testuak gorde'
+        : 'No se han podido guardar los textos',
+      'error'
+    );
+  }
+}
+
+
+function renderContactsAdmin() {
   const t = I18N[currentLang];
   const container = document.getElementById('contactsAdminList');
 
@@ -2634,7 +2889,35 @@ async function deleteCategory(id) {
     }
 
     function initFirebaseListeners() {
-      database.ref('kontaktuak').on('value', snapshot => {
+
+  // Testuak
+  database.ref('testuak').on('value', snapshot => {
+    customTexts = snapshot.val() || {};
+
+    ['eu', 'es'].forEach(lang => {
+      I18N[lang] = {
+        ...DEFAULT_I18N[lang],
+        ...(customTexts[lang] || {})
+      };
+    });
+
+    updateStaticTexts();
+    renderCategories();
+    renderProducts();
+    renderCart();
+
+    if (currentView === 'admin') {
+      renderAdminOrders();
+      renderHarvestSummary();
+      renderAdminCatalog();
+      renderAdminCategories();
+      renderContactsAdmin();
+      renderStatistics();
+      renderTextsAdmin();
+    }
+  });
+
+  database.ref('kontaktuak').on('value', snapshot => {
         const data = snapshot.val();
         if (data) {
           contacts = Array.isArray(data) ? data : Object.values(data);
@@ -3242,7 +3525,7 @@ function formatStatsQuantity(data) {
 
 
 function formatStatsNumber(value) {
-  return Number(value || 0).toLocaleString('es-ES', {
+  return Number(value || 0).toLocaleString('currentLang === 'eu' ? 'eu-ES' : 'es-ES'', {
     maximumFractionDigits: 2
   });
 }
@@ -3360,7 +3643,10 @@ function renderStatistics() {
 
   if (periodLabel) {
     periodLabel.textContent =
-      `${from.toLocaleDateString('es-ES')} — ${to.toLocaleDateString('es-ES')}`;
+      const locale = currentLang === 'eu' ? 'eu-ES' : 'es-ES';
+
+periodLabel.textContent =
+  `${from.toLocaleDateString(locale)} — ${to.toLocaleDateString(locale)}`;
   }
 
 
@@ -3542,7 +3828,7 @@ updateStatsSortIndicators();
   if (!deliveryRows.length) {
 
     deliveryContainer.innerHTML =
-      '<div class="text-sm text-stone-400">Daturik ez / Sin datos</div>';
+      `<div class="text-sm text-stone-400">${I18N[currentLang].noData}</div>`;
 
   } else {
 
@@ -3603,7 +3889,7 @@ updateStatsSortIndicators();
   if (!contactRows.length) {
 
     contactsContainer.innerHTML =
-      '<div class="text-sm text-stone-400">Daturik ez / Sin datos</div>';
+      `<div class="text-sm text-stone-400">${I18N[currentLang].noData}</div>`;
 
   } else {
 
