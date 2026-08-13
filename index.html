@@ -2049,6 +2049,20 @@ function populateProductCategorySelect() {
     ? 'Denak'
     : 'Todos';
 
+  const visibleCategories = categories.filter(category =>
+    products.some(product =>
+      product.categoryId === category.id &&
+      product.available
+    )
+  );
+
+  if (
+    selectedCategory !== 'ALL' &&
+    !visibleCategories.some(category => category.id === selectedCategory)
+  ) {
+    selectedCategory = 'ALL';
+  }
+
   const allActive = selectedCategory === 'ALL';
 
   let html = `
@@ -2062,7 +2076,7 @@ function populateProductCategorySelect() {
     </button>
   `;
 
-  html += categories.map(category => {
+  html += visibleCategories.map(category => {
     const isActive = selectedCategory === category.id;
 
     const activeClass = isActive
@@ -2122,11 +2136,13 @@ const displayTag = getProductTag(prod);
         return `
           <div class="bg-white rounded-2xl border border-stone-200/80 shadow-sm hover:shadow-md transition overflow-hidden flex flex-col justify-between group">
             <div>
-              <div class="relative h-44 overflow-hidden bg-stone-100">
-                <img src="${prod.image}"
-     alt="${displayName}"
-     class="w-full h-full object-cover group-hover:scale-105 transition duration-300"
-     onerror="this.src='https://placehold.co/600x400/22c55e/ffffff?text=Baratzea'">
+              <div class="relative h-44 overflow-hidden bg-brand-500">
+  ${prod.image ? `
+    <img src="${prod.image}"
+         alt="${displayName}"
+         class="w-full h-full object-cover group-hover:scale-105 transition duration-300"
+         onerror="this.style.display='none'">
+  ` : ''}
                 ${displayTag ? `
   <span class="absolute top-3 left-3 bg-white/90 backdrop-blur-md text-brand-800 text-[11px] font-bold px-2.5 py-0.5 rounded-full border border-brand-200 shadow-sm">
     ${displayTag}
