@@ -1889,14 +1889,12 @@
       });
 
       const now = new Date();
-      const stamp = now.getFullYear().toString() +
-        String(now.getMonth() + 1).padStart(2, '0') +
-        String(now.getDate()).padStart(2, '0') + '-' +
-        String(now.getHours()).padStart(2, '0') +
-        String(now.getMinutes()).padStart(2, '0') +
-        String(now.getSeconds()).padStart(2, '0');
-      const randomPart = Math.random().toString(36).slice(2, 6).toUpperCase();
-      const newOrderId = `ESK-${stamp}-${randomPart}`;
+const stamp =
+  String(now.getMonth() + 1).padStart(2, '0') +
+  String(now.getDate()).padStart(2, '0');
+
+const randomPart = Math.random().toString(36).slice(2, 6).toUpperCase();
+const newOrderId = `ESK-${stamp}-${randomPart}`;
       const newOrder = {
         id: newOrderId, customerName: name, email, deliveryMethod: method, contactPerson,
         deliveryDate: '', notes: notes || '-', status: 'Pendiente', createdAt: new Date().toISOString(),
@@ -1954,10 +1952,12 @@
       if (pendingBadge) pendingBadge.innerText = pendingCount;
 
       const filteredOrders = orders.filter(o => {
-        const matchesStatus = statusFilter === 'ALL' || o.status === statusFilter;
-        const matchesContact = contactFilter === 'ALL' || o.contactPerson === contactFilter;
-        return matchesStatus && matchesContact;
-      });
+  const matchesStatus = statusFilter === 'ALL' || o.status === statusFilter;
+  const matchesContact = contactFilter === 'ALL' || o.contactPerson === contactFilter;
+  return matchesStatus && matchesContact;
+}).sort((a, b) => {
+  return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
+});
 
       document.getElementById('ordersSummaryText').innerText = `${filteredOrders.length} eskaera erakusten`;
 
