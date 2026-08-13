@@ -464,7 +464,7 @@
       <div id="adminContactsTab" class="hidden space-y-4">
         <div class="bg-white rounded-2xl border border-stone-200 shadow-sm overflow-hidden">
           <div class="p-4 border-b border-stone-200 bg-stone-50">
-            <h3 id="statsContactsTitle"
+            <h3 id="contactsTitle"
     class="font-display font-bold text-stone-800">
   Harreman-pertsonak
 </h3>
@@ -666,7 +666,7 @@
     </div>
 
     <div class="bg-white rounded-2xl border border-stone-200 shadow-sm p-5">
-      <h3 id="contactsTitle"
+      <h3 id="statsContactsTitle"
     class="font-display font-bold text-stone-800">
   Harremanetarako pertsonak
 </h3>
@@ -1166,7 +1166,7 @@ edit: "Editatu",
 catalogSubtitle: "Eskuragarritasuna edo prezioak unean bertan alda ditzakezu",
 disableProduct: "Agortu",
 enableProduct: "Gaitu",
-delete: "Ezabatu"
+delete: "Ezabatu",
 
 // Kategoriak
 categoryModalTitle: "Kategoria",
@@ -1298,7 +1298,7 @@ edit: "Editar",
 catalogSubtitle: "Puedes cambiar la disponibilidad o los precios al momento",
 disableProduct: "Agotar",
 enableProduct: "Activar",
-delete: "Eliminar"
+delete: "Eliminar",
 
 // Kategoriak
 categoryModalTitle: "Categoría",
@@ -2223,7 +2223,7 @@ const displayTag = getProductTag(prod);
   const container = document.getElementById('harvestSummaryList');
 
   const activeOrders = orders.filter(
-  o => o.status === 'Pendiente' || o.status === 'Preparando'
+  o => o.status === 'pending' || o.status === 'preparing'
 );
 
   if (activeOrders.length === 0) {
