@@ -82,6 +82,107 @@
     .pulse-soft {
       animation: pulseSoft 2s infinite ease-in-out;
     }
+    /* Ajustes responsive para móvil */
+@media (max-width: 640px) {
+
+  /* Un poco menos de margen general */
+  main {
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+    padding-top: 16px !important;
+  }
+
+  /* Cabecera más compacta */
+  header .max-w-7xl {
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+  }
+
+  #headerBrandTitle {
+    font-size: 16px;
+    line-height: 1.1;
+  }
+
+  #headerBrandSubtitle {
+    display: none;
+  }
+
+  #headerFreshBadge {
+    display: none;
+  }
+
+  /* Hero más compacto */
+  #storeView > div:first-child {
+    padding: 20px !important;
+  }
+
+  #heroTitle {
+    font-size: 25px !important;
+    line-height: 1.15;
+  }
+
+  #heroDesc {
+    font-size: 13px;
+  }
+
+  /* Categorías cómodas para deslizar horizontalmente */
+  #categoryContainer {
+    width: 100%;
+    padding-bottom: 6px;
+  }
+
+  #categoryContainer button {
+    flex-shrink: 0;
+  }
+
+  /* Tarjetas de producto: imagen algo menos alta */
+  #productGrid .h-44 {
+    height: 160px;
+  }
+
+  /* Modales: aprovechar mejor la pantalla */
+  #addProductModal,
+  #checkoutModal,
+  #adminLoginModal,
+  #removeItemModal {
+    padding: 10px !important;
+  }
+
+  #addProductModal > div,
+  #checkoutModal > div,
+  #adminLoginModal > div,
+  #removeItemModal > div {
+    max-height: 94vh;
+    overflow-y: auto;
+  }
+
+  /* Formularios del producto: una columna en teléfonos */
+  #addProductForm .grid-cols-2 {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Panel baserritarra: pestañas desplazables */
+  #adminView > .flex.border-b {
+    overflow-x: auto;
+    white-space: nowrap;
+    gap: 18px;
+    padding-bottom: 2px;
+  }
+
+  #adminView > .flex.border-b button {
+    flex-shrink: 0;
+  }
+
+  /* Tablas: mantenerlas desplazables sin deformarlas */
+  #adminCatalogTab table {
+    min-width: 650px;
+  }
+
+  /* Toasts un poco más abajo para no chocar con la cabecera */
+  #toastContainer {
+    top: 70px !important;
+  }
+}
   </style>
 </head>
 <body class="h-full text-slate-800 antialiased flex flex-col font-sans">
