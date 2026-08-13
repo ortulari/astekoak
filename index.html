@@ -398,6 +398,31 @@
 
       <!-- TAB CONTENT 3: CATALOG MANAGEMENT -->
       <div id="adminCatalogTab" class="hidden space-y-4">
+        <!-- KATEGORIEN KUDEAKETA -->
+  <div class="bg-white rounded-2xl border border-stone-200 shadow-sm p-5">
+
+    <div class="flex items-center justify-between gap-3 mb-4">
+      <div>
+        <h3 class="font-display font-bold text-stone-800">
+          Kategoriak / Categorías
+        </h3>
+        <p class="text-xs text-stone-500">
+          Produktuak antolatzeko kategoriak / Categorías para organizar los productos
+        </p>
+      </div>
+
+      <button
+        onclick="openCategoryModal()"
+        class="px-3 py-2 bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold rounded-xl">
+        + Kategoria / Categoría
+      </button>
+    </div>
+
+    <div id="adminCategoriesList"
+         class="flex flex-wrap gap-2">
+    </div>
+
+  </div>
         <div class="bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-sm">
           <div class="p-4 border-b border-stone-200 flex justify-between items-center bg-stone-50">
             <h3 class="font-display font-bold text-stone-800" id="catalogTitle">Baratze Produktuen Katalogoa</h3>
@@ -556,10 +581,33 @@
       <table class="w-full text-left text-sm min-w-[650px]">
         <thead class="bg-stone-100 text-stone-600 text-xs uppercase">
           <tr>
-            <th class="p-3.5">Produktua / Producto</th>
-            <th class="p-3.5">Kopurua / Cantidad</th>
-            <th class="p-3.5">Eskaerak / Pedidos</th>
-            <th class="p-3.5 text-right">Fakturazioa / Facturación</th>
+            <th class="p-3.5">
+  <button onclick="setStatsSort('name')" class="flex items-center gap-1 font-bold hover:text-brand-700">
+    Produktua / Producto
+    <span id="statsSortName">↕</span>
+  </button>
+</th>
+
+<th class="p-3.5">
+  <button onclick="setStatsSort('quantity')" class="flex items-center gap-1 font-bold hover:text-brand-700">
+    Kopurua / Cantidad
+    <span id="statsSortQuantity">↕</span>
+  </button>
+</th>
+
+<th class="p-3.5">
+  <button onclick="setStatsSort('orders')" class="flex items-center gap-1 font-bold hover:text-brand-700">
+    Eskaerak / Pedidos
+    <span id="statsSortOrders">↕</span>
+  </button>
+</th>
+
+<th class="p-3.5 text-right">
+  <button onclick="setStatsSort('revenue')" class="ml-auto flex items-center gap-1 font-bold hover:text-brand-700">
+    Fakturazioa / Facturación
+    <span id="statsSortRevenue">↓</span>
+  </button>
+</th>
           </tr>
         </thead>
         <tbody id="statsProductsTable" class="divide-y divide-stone-100"></tbody>
@@ -796,6 +844,57 @@
     </div>
   </div>
 
+<!-- MODAL: CATEGORY -->
+<div id="categoryModal"
+     class="hidden fixed inset-0 z-[70] bg-stone-900/50 backdrop-blur-sm flex items-center justify-center p-4">
+
+  <div class="bg-white rounded-2xl shadow-xl w-full max-w-md p-6">
+
+    <div class="flex justify-between items-center mb-5">
+      <h3 id="categoryModalTitle"
+          class="font-display font-bold text-xl">
+        Kategoria / Categoría
+      </h3>
+
+      <button onclick="closeCategoryModal()"
+              class="text-stone-400 hover:text-stone-700">
+        <i data-lucide="x"></i>
+      </button>
+    </div>
+
+    <input type="hidden" id="editCategoryId">
+
+    <div class="space-y-4">
+
+      <div>
+        <label class="block text-xs font-semibold mb-1">
+          Izena (EU)
+        </label>
+        <input id="categoryNameEu"
+               type="text"
+               class="w-full px-3 py-2 border border-stone-300 rounded-lg"
+               placeholder="Adib. Barazkiak">
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold mb-1">
+          Nombre (ES)
+        </label>
+        <input id="categoryNameEs"
+               type="text"
+               class="w-full px-3 py-2 border border-stone-300 rounded-lg"
+               placeholder="Ej. Verduras">
+      </div>
+
+      <button onclick="saveCategory()"
+              class="w-full py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl">
+        Gorde / Guardar
+      </button>
+
+    </div>
+  </div>
+</div>
+  
   <!-- MODAL: ADD PRODUCT (ADMIN) -->
   <div id="addProductModal" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="bg-white max-w-md w-full rounded-2xl shadow-2xl overflow-hidden">
@@ -808,21 +907,39 @@
 
       <form id="addProductForm" onsubmit="handleAddProductSubmit(event)" class="p-5 space-y-4">
         <input type="hidden" id="editProductId">
-        <div>
-          <label class="block text-xs font-semibold text-stone-700 mb-1">Produktuarren Izen-abizena</label>
-          <input type="text" id="newProdName" required placeholder="Adib. Kalabazin Berdea" class="w-full px-3 py-2 border border-stone-300 rounded-lg text-sm">
-        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+  <div>
+    <label class="block text-xs font-semibold text-stone-700 mb-1">
+      Produktuaren izena (EU)
+    </label>
+    <input
+      type="text"
+      id="newProdNameEu"
+      required
+      placeholder="Adib. Kuiatxo berdea"
+      class="w-full px-3 py-2 border border-stone-300 rounded-lg text-sm">
+  </div>
+
+  <div>
+    <label class="block text-xs font-semibold text-stone-700 mb-1">
+      Nombre del producto (ES)
+    </label>
+    <input
+      type="text"
+      id="newProdNameEs"
+      required
+      placeholder="Ej. Calabacín verde"
+      class="w-full px-3 py-2 border border-stone-300 rounded-lg text-sm">
+  </div>
+</div>
 
         <div class="grid grid-cols-2 gap-3">
           <div>
             <label class="block text-xs font-semibold text-stone-700 mb-1">Kategoria</label>
-            <select id="newProdCategory" class="w-full px-3 py-2 border border-stone-300 rounded-lg text-sm">
-              <option value="Verduras">Barazkiak / Verduras</option>
-              <option value="Hortalizas">Baratzekariak / Hortalizas</option>
-              <option value="Frutas">Fruituak / Frutas</option>
-              <option value="Hierbas">Belarrak / Hierbas</option>
-              <option value="Cestas">Saskiak / Cestas</option>
-            </select>
+            <select id="newProdCategory"
+        required
+        class="w-full px-3 py-2 border border-stone-300 rounded-lg text-sm bg-white">
+</select>
           </div>
           <div>
             <label class="block text-xs font-semibold text-stone-700 mb-1">Salmenta Mota</label>
@@ -858,19 +975,35 @@
         </div>
 
         <div>
-  <label class="block text-xs font-semibold text-stone-700 mb-1">
-    Etiketa / Etiqueta
-  </label>
-  <input
-    type="text"
-    id="newProdTag"
-    placeholder="Adib. Berria / Nuevo, Garaikoa / De temporada..."
-    class="w-full px-3 py-2 border border-stone-300 rounded-lg text-sm"
-  >
-  <p class="text-[11px] text-stone-400 mt-1">
-    Hutsik uzten baduzu, ez da etiketarik erakutsiko / Si lo dejas vacío, no se mostrará etiqueta.
-  </p>
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+
+  <div>
+    <label class="block text-xs font-semibold text-stone-700 mb-1">
+      Etiketa (EU)
+    </label>
+    <input
+      type="text"
+      id="newProdTagEu"
+      placeholder="Adib. Berria"
+      class="w-full px-3 py-2 border border-stone-300 rounded-lg text-sm">
+  </div>
+
+  <div>
+    <label class="block text-xs font-semibold text-stone-700 mb-1">
+      Etiqueta (ES)
+    </label>
+    <input
+      type="text"
+      id="newProdTagEs"
+      placeholder="Ej. Nuevo"
+      class="w-full px-3 py-2 border border-stone-300 rounded-lg text-sm">
+  </div>
+
 </div>
+
+<p class="text-[11px] text-stone-400">
+  Etiketa hutsik utz daiteke / La etiqueta puede dejarse vacía.
+</p>
         
         <div class="space-y-2">
           <label class="block text-xs font-semibold text-stone-700 mb-1">Irudia / Imagen</label>
@@ -920,14 +1053,6 @@
         pickupDelivery: "Finkan jaso edo esku-eskura eman",
         freshnessGuarantee: "Freskotasun bermea",
         searchPlaceholder: "Bilatu tomatea, azazkala, patata...",
-        categories: {
-          ALL: "Denak",
-          Verduras: "Barazkiak",
-          Hortalizas: "Baratzekariak",
-          Frutas: "Fruituak",
-          Hierbas: "Belarrak",
-          Cestas: "Saskiak"
-        },
         labelName: "Izen-abizenak *",
         labelDelivery: "Banaketa Mota *",
         labelContactPerson: "Zure harreman-pertsona (Nork eramango/emango dizu?) *",
@@ -947,7 +1072,59 @@
         lblNoticePrice: "*Azken prezioa pisaketa zehatzaren arabera alda daiteke saskia prestatzean.",
         btnContinueCheckout: "Jarraitu Datuen Betetzerantz",
         checkoutModalTitle: "Eskaera Prestatzeko Datuak",
-        checkoutModalSubtitle: "Aukeratu entrega-modua eta bete zure datuak"
+        checkoutModalSubtitle: "Aukeratu entrega-modua eta bete zure datuak",
+        // Administrazio panela
+adminTitle: "Baserritarraren panela",
+adminSubtitle: "Eskaerak, uzta, katalogoa eta banaketa kudeatu",
+tabOrders: "Eskaerak",
+tabHarvest: "Uzta prestatu",
+tabCatalog: "Katalogoa",
+tabContacts: "Harremanak",
+tabStats: "Estatistikak",
+
+// Katalogoa
+categoriesTitle: "Kategoriak",
+categoriesDesc: "Produktuak antolatzeko kategoriak",
+addCategory: "+ Kategoria",
+catalogProduct: "Produktua",
+catalogCategory: "Kategoria",
+catalogPrice: "Prezioa",
+catalogUnit: "Unitatea",
+catalogStatus: "Egoera",
+catalogActions: "Ekintzak",
+available: "Eskuragarri",
+soldOut: "Agortuta",
+edit: "Editatu",
+
+// Kategoriak
+categoryModalTitle: "Kategoria",
+categoryNameEu: "Izena euskaraz",
+categoryNameEs: "Izena gaztelaniaz",
+save: "Gorde",
+noCategories: "Ez dago kategoriarik",
+
+// Estatistikak
+statsTitle: "Estatistikak",
+statsSubtitle: "Eskaeren eta salmenten laburpena",
+period: "Epea",
+today: "Gaur",
+thisWeek: "Aste honetan",
+thisMonth: "Hilabete honetan",
+thisYear: "Urte honetan",
+custom: "Pertsonalizatua",
+from: "Hasiera",
+to: "Amaiera",
+orders: "Eskaerak",
+completed: "Osatuak",
+revenue: "Salmentak",
+averageTicket: "Batez besteko erosketa",
+customers: "Bezeroak",
+productSummary: "Produktuen laburpena",
+productSummaryDesc: "Amaitutako eskaeretan benetan saldutakoa",
+quantity: "Kopurua",
+deliveries: "Banaketa",
+contactPersons: "Harreman-pertsonak",
+noData: "Daturik ez"
       },
       es: {
         brandName: "Huerta Del Rancho",
@@ -963,14 +1140,6 @@
         pickupDelivery: "Recogida en finca o entrega en mano",
         freshnessGuarantee: "Garantía de frescura",
         searchPlaceholder: "Buscar tomate, acelga, patata...",
-        categories: {
-          ALL: "Todos",
-          Verduras: "Verduras",
-          Hortalizas: "Hortalizas",
-          Frutas: "Frutas",
-          Hierbas: "Hierbas",
-          Cestas: "Cestas"
-        },
         labelName: "Nombre Completo *",
         labelDelivery: "Tipo de Entrega *",
         labelContactPerson: "Persona de contacto (¿Quién te lo lleva/entrega?) *",
@@ -990,7 +1159,59 @@
         lblNoticePrice: "*El importe final puede variar ligeramente según pesaje exacto.",
         btnContinueCheckout: "Continuar con Datos de Entrega",
         checkoutModalTitle: "Datos para la Preparación",
-        checkoutModalSubtitle: "Elige la modalidad de entrega y completa tus datos"
+        checkoutModalSubtitle: "Elige la modalidad de entrega y completa tus datos",
+        // Administrazio panela
+adminTitle: "Panel del agricultor",
+adminSubtitle: "Gestiona pedidos, cosecha, catálogo y entregas",
+tabOrders: "Pedidos",
+tabHarvest: "Preparar cosecha",
+tabCatalog: "Catálogo",
+tabContacts: "Contactos",
+tabStats: "Estadísticas",
+
+// Katalogoa
+categoriesTitle: "Categorías",
+categoriesDesc: "Categorías para organizar los productos",
+addCategory: "+ Categoría",
+catalogProduct: "Producto",
+catalogCategory: "Categoría",
+catalogPrice: "Precio",
+catalogUnit: "Unidad",
+catalogStatus: "Estado",
+catalogActions: "Acciones",
+available: "Disponible",
+soldOut: "Agotado",
+edit: "Editar",
+
+// Kategoriak
+categoryModalTitle: "Categoría",
+categoryNameEu: "Nombre en euskera",
+categoryNameEs: "Nombre en castellano",
+save: "Guardar",
+noCategories: "No hay categorías",
+
+// Estatistikak
+statsTitle: "Estadísticas",
+statsSubtitle: "Resumen de pedidos y ventas",
+period: "Periodo",
+today: "Hoy",
+thisWeek: "Esta semana",
+thisMonth: "Este mes",
+thisYear: "Este año",
+custom: "Personalizado",
+from: "Desde",
+to: "Hasta",
+orders: "Pedidos",
+completed: "Completados",
+revenue: "Ventas",
+averageTicket: "Ticket medio",
+customers: "Clientes",
+productSummary: "Resumen por producto",
+productSummaryDesc: "Ventas reales de pedidos completados",
+quantity: "Cantidad",
+deliveries: "Entregas",
+contactPersons: "Personas de contacto",
+noData: "Sin datos"
       }
     };
 
@@ -1126,12 +1347,16 @@
     let currentLang = localStorage.getItem('huerta_lang') || 'eu'; // 'eu' by default
     let contacts = JSON.parse(localStorage.getItem('huerta_contacts')) || DEFAULT_CONTACTS;
     let products = (JSON.parse(localStorage.getItem('huerta_products')) || DEFAULT_PRODUCTS).map(normalizeProduct);
+    let categories = [];
     let orders = [];
     let cart = {}; // { prodId: quantity }
     let selectedCategory = 'ALL';
     let currentView = 'store'; // 'store' or 'admin'
-    let currentAdminTab = 'orders'; // 'orders', 'harvest', 'catalog', 'contacts'
+    let currentAdminTab = 'orders';
     let pendingRemoval = null;
+
+    let statsSortField = 'revenue';
+    let statsSortDirection = 'desc';
 
 
     // --- Firebase Authentication for Baserritar mode ---
@@ -1223,31 +1448,61 @@
     });
 
     function normalizeProduct(p) {
-      const priceType = p.priceType || p.prezioMota || (p.unitType === 'kg' ? 'kg' : 'ud');
-      const packSize = Number(p.packSize ?? p.lotearenTamaina ?? 1) || 1;
-      const packUnit = p.packUnit || p.lotearenUnitatea || (priceType === 'lote' ? 'lote' : (p.unitType || 'ud'));
-      const unitType = priceType === 'ud_kg' ? 'ud' : (p.unitType || (priceType === 'lote' ? packUnit : priceType));
-      const orderUnit = priceType === 'ud_kg' ? 'ud' : (p.orderUnit || p.eskaeraUnitatea || (priceType === 'lote' ? packUnit : unitType));
+  const priceType = p.priceType || 'ud';
+  const packSize = Number(p.packSize ?? 1) || 1;
+  const packUnit = p.packUnit || (priceType === 'lote' ? 'lote' : (p.unitType || 'ud'));
+  const unitType = priceType === 'ud_kg'
+    ? 'ud'
+    : (p.unitType || (priceType === 'lote' ? packUnit : priceType));
 
-      return {
-        ...p,
-        id: p.id,
-        name: p.name || p.izena || 'Produktua',
-        category: p.category || p.kategoria || 'Hortalizas',
-        price: Number(p.price ?? p.prezioa ?? 0) || 0,
-        priceType,
-        packSize,
-        packUnit,
-        unitType,
-        orderUnit,
-        step: Number(p.step ?? p.urratsa ?? (priceType === 'lote' ? packSize : 1)) || 1,
-        min: Number(p.min ?? p.gutxienekoa ?? (priceType === 'lote' ? packSize : 1)) || 1,
-        available: p.available ?? p.eskuragarri ?? true,
-        image: p.image || p.irudia || '',
-        tag: p.tag || ''
-      };
+  const orderUnit = priceType === 'ud_kg'
+    ? 'ud'
+    : (p.orderUnit || (priceType === 'lote' ? packUnit : unitType));
+
+  return {
+    ...p,
+    id: p.id,
+
+    name: {
+      eu: p.name?.eu || '',
+      es: p.name?.es || ''
+    },
+
+    categoryId: p.categoryId || '',
+    price: Number(p.price ?? 0) || 0,
+    priceType,
+    packSize,
+    packUnit,
+    unitType,
+    orderUnit,
+    step: Number(p.step ?? (priceType === 'lote' ? packSize : 1)) || 1,
+    min: Number(p.min ?? (priceType === 'lote' ? packSize : 1)) || 1,
+    available: p.available ?? true,
+    image: p.image || '',
+
+    tag: {
+      eu: p.tag?.eu || '',
+      es: p.tag?.es || ''
     }
+  };
+}
 
+    function getProductName(product) {
+  if (!product) return '';
+
+  return product.name?.[currentLang]
+    || product.name?.eu
+    || product.name?.es
+    || '';
+}
+
+function getProductTag(product) {
+  if (!product) return '';
+
+  return product.tag?.[currentLang]
+    || '';
+}
+    
     function setLanguage(lang) {
       currentLang = lang;
       localStorage.setItem('huerta_lang', lang);
@@ -1264,11 +1519,20 @@
       }
 
       updateStaticTexts();
-      renderCategories();
-      renderProducts();
-      renderCart();
-      populateContactSelectors();
-    }
+renderCategories();
+renderProducts();
+renderCart();
+populateContactSelectors();
+populateProductCategorySelect();
+
+if (currentView === 'admin') {
+  renderAdminOrders();
+  renderHarvestSummary();
+  renderAdminCatalog();
+  renderAdminCategories();
+  renderContactsAdmin();
+  renderStatistics();
+}
 
     function updateStaticTexts() {
       const t = I18N[currentLang];
@@ -1344,24 +1608,69 @@
       }
     }
 
-    function renderCategories() {
-      const container = document.getElementById('categoryContainer');
-      const cats = ['ALL', 'Verduras', 'Hortalizas', 'Frutas', 'Hierbas', 'Cestas'];
-      const catLabels = I18N[currentLang].categories;
+function getCategoryName(category) {
+  if (!category) return '';
 
-      container.innerHTML = cats.map(cat => {
-        const isActive = selectedCategory === cat;
-        const activeClass = isActive 
-          ? 'bg-brand-700 text-white shadow-sm' 
-          : 'bg-white text-stone-600 hover:bg-stone-100 border border-stone-200';
-        return `
-          <button onclick="selectCategory('${cat}')" 
-                  class="px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition ${activeClass}">
-            ${catLabels[cat] || cat}
-          </button>
-        `;
-      }).join('');
-    }
+  return category.name?.[currentLang]
+    || category.name?.eu
+    || category.name?.es
+    || '';
+}
+
+function populateProductCategorySelect() {
+  const select = document.getElementById('newProdCategory');
+  if (!select) return;
+
+  const previousValue = select.value;
+
+  select.innerHTML = categories.map(category => `
+    <option value="${category.id}">
+      ${getCategoryName(category)}
+    </option>
+  `).join('');
+
+  if (categories.some(c => c.id === previousValue)) {
+    select.value = previousValue;
+  }
+}
+    
+    function renderCategories() {
+  const container = document.getElementById('categoryContainer');
+
+  const allLabel = currentLang === 'eu'
+    ? 'Denak'
+    : 'Todos';
+
+  const allActive = selectedCategory === 'ALL';
+
+  let html = `
+    <button onclick="selectCategory('ALL')"
+            class="px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition ${
+              allActive
+                ? 'bg-brand-700 text-white shadow-sm'
+                : 'bg-white text-stone-600 hover:bg-stone-100 border border-stone-200'
+            }">
+      ${allLabel}
+    </button>
+  `;
+
+  html += categories.map(category => {
+    const isActive = selectedCategory === category.id;
+
+    const activeClass = isActive
+      ? 'bg-brand-700 text-white shadow-sm'
+      : 'bg-white text-stone-600 hover:bg-stone-100 border border-stone-200';
+
+    return `
+      <button onclick="selectCategory('${category.id}')"
+              class="px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition ${activeClass}">
+        ${getCategoryName(category)}
+      </button>
+    `;
+  }).join('');
+
+  container.innerHTML = html;
+}
 
     function selectCategory(cat) {
       selectedCategory = cat;
@@ -1375,8 +1684,8 @@
       const query = (document.getElementById('searchInput').value || '').toLowerCase().trim();
 
       const filtered = products.filter(p => {
-        const matchesCat = selectedCategory === 'ALL' || p.category === selectedCategory;
-        const matchesQuery = p.name.toLowerCase().includes(query);
+        const matchesCat = selectedCategory === 'ALL' || p.categoryId === selectedCategory;
+        const matchesQuery = getProductName(p).toLowerCase().includes(query);
         return matchesCat && matchesQuery && p.available;
       });
 
@@ -1399,22 +1708,25 @@
           unitLabel = prod.packUnit || 'lote';
         }
 
+const displayName = getProductName(prod);
+const displayTag = getProductTag(prod);
+        
         return `
           <div class="bg-white rounded-2xl border border-stone-200/80 shadow-sm hover:shadow-md transition overflow-hidden flex flex-col justify-between group">
             <div>
               <div class="relative h-44 overflow-hidden bg-stone-100">
-                <img src="${prod.image}" alt="${prod.name}" 
+                <img src="${prod.image}" alt="${displayName}">
                      class="w-full h-full object-cover group-hover:scale-105 transition duration-300"
                      onerror="this.src='https://placehold.co/600x400/22c55e/ffffff?text=Baratzea'">
-                ${prod.tag ? `
+                ${displayTag ? `
   <span class="absolute top-3 left-3 bg-white/90 backdrop-blur-md text-brand-800 text-[11px] font-bold px-2.5 py-0.5 rounded-full border border-brand-200 shadow-sm">
-    ${prod.tag}
+    ${displayTag}
   </span>
 ` : ''}
               </div>
 
               <div class="p-4 space-y-2">
-                <h3 class="font-display font-bold text-stone-900 text-base leading-snug">${prod.name}</h3>
+                <h3 class="font-display font-bold text-stone-900 text-base leading-snug">${displayName}</h3>
                 <div class="flex items-baseline gap-1">
                   <span class="font-extrabold text-stone-900 text-xl">${Number(prod.price).toFixed(2)} €</span>
                   <span class="text-xs text-stone-500 font-medium">
@@ -1738,12 +2050,133 @@
       lucide.createIcons();
     }
 
+function renderAdminCategories() {
+  const container = document.getElementById('adminCategoriesList');
+  if (!container) return;
+
+  if (!categories.length) {
+    container.innerHTML = `
+      <span class="text-sm text-stone-400">
+        Ez dago kategoriarik / No hay categorías
+      </span>
+    `;
+    return;
+  }
+
+  container.innerHTML = categories.map(category => `
+    <div class="flex items-center gap-2 px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl">
+
+      <span class="font-semibold text-sm text-stone-700">
+        ${getCategoryName(category)}
+      </span>
+
+      <button onclick="editCategory('${category.id}')"
+              class="text-stone-400 hover:text-brand-700">
+        <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
+      </button>
+
+      <button onclick="deleteCategory('${category.id}')"
+              class="text-stone-400 hover:text-red-600">
+        <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+      </button>
+
+    </div>
+  `).join('');
+
+  lucide.createIcons();
+}
+
+function openCategoryModal() {
+  document.getElementById('editCategoryId').value = '';
+  document.getElementById('categoryNameEu').value = '';
+  document.getElementById('categoryNameEs').value = '';
+
+  document.getElementById('categoryModal').classList.remove('hidden');
+  lucide.createIcons();
+}
+
+function closeCategoryModal() {
+  document.getElementById('categoryModal').classList.add('hidden');
+}
+
+function editCategory(id) {
+  const category = categories.find(c => c.id === id);
+  if (!category) return;
+
+  document.getElementById('editCategoryId').value = id;
+  document.getElementById('categoryNameEu').value = category.name?.eu || '';
+  document.getElementById('categoryNameEs').value = category.name?.es || '';
+
+  document.getElementById('categoryModal').classList.remove('hidden');
+}
+
+async function saveCategory() {
+  const editId = document.getElementById('editCategoryId').value;
+
+  const nameEu = document.getElementById('categoryNameEu').value.trim();
+  const nameEs = document.getElementById('categoryNameEs').value.trim();
+
+  if (!nameEu || !nameEs) {
+    showToast(
+      currentLang === 'eu'
+        ? 'Bete bi hizkuntzetako izenak'
+        : 'Completa los nombres en ambos idiomas',
+      'info'
+    );
+    return;
+  }
+
+  const id = editId || `cat-${Date.now()}`;
+
+  const categoryData = {
+    id,
+    name: {
+      eu: nameEu,
+      es: nameEs
+    }
+  };
+
+  await database.ref(`kategoriak/${id}`).set(categoryData);
+
+  closeCategoryModal();
+}
+
+async function deleteCategory(id) {
+  const used = products.some(product => product.categoryId === id);
+
+  if (used) {
+    showToast(
+      currentLang === 'eu'
+        ? 'Kategoria honek produktuak ditu. Lehenengo aldatu produktuen kategoria.'
+        : 'Esta categoría tiene productos. Cambia primero la categoría de esos productos.',
+      'info'
+    );
+    return;
+  }
+
+  const ok = confirm(
+    currentLang === 'eu'
+      ? 'Kategoria ezabatu nahi duzu?'
+      : '¿Quieres eliminar esta categoría?'
+  );
+
+  if (!ok) return;
+
+  await database.ref(`kategoriak/${id}`).remove();
+
+  if (selectedCategory === id) {
+    selectedCategory = 'ALL';
+  }
+}
+    
     function renderAdminCatalog() {
       const tbody = document.getElementById('adminCatalogTable');
       tbody.innerHTML = products.map(prod => `
         <tr class="hover:bg-stone-50 border-b border-stone-100">
-          <td class="p-3.5 font-bold text-stone-900">${prod.name}</td>
-          <td class="p-3.5 text-stone-600">${prod.category}</td>
+          <td class="p-3.5 font-bold text-stone-900">${getProductName(prod)}</td>
+          <td class="p-3.5 text-stone-600">
+  ${getCategoryName(categories.find(c => c.id === prod.categoryId))}
+</td>
           <td class="p-3.5 font-bold text-stone-800">${Number(prod.price).toFixed(2)} €</td>
           <td class="p-3.5 text-stone-600">${prod.priceType === 'lote' ? `${prod.packSize} ${prod.packUnit}` : (prod.priceType === 'ud_kg' ? 'ud → €/kg' : (prod.orderUnit || prod.unitType || prod.priceType))}</td>
           <td class="p-3.5">
@@ -1803,7 +2236,10 @@
       document.getElementById('addProdModalTitle').innerText = 'Gehitu Produktu Berria Baratzerako';
       document.getElementById('newProdPackSize').value = 2;
       document.getElementById('newProdPackUnit').value = 'dozena';
-      document.getElementById('newProdTag').value = '';
+      document.getElementById('newProdNameEu').value = '';
+      document.getElementById('newProdNameEs').value = '';
+      document.getElementById('newProdTagEu').value = '';
+      document.getElementById('newProdTagEs').value = '';
       toggleLoteFields();
       document.getElementById('addProductModal').classList.remove('hidden');
     }
@@ -1817,15 +2253,18 @@
       if (!p) return;
 
       document.getElementById('editProductId').value = p.id;
-      document.getElementById('newProdName').value = p.name;
-      document.getElementById('newProdCategory').value = p.category;
+      document.getElementById('newProdNameEu').value = p.name?.eu || '';
+      document.getElementById('newProdNameEs').value = p.name?.es || '';
+      populateProductCategorySelect();
+      document.getElementById('newProdCategory').value = p.categoryId || '';
       document.getElementById('newProdPriceType').value = p.priceType || p.unitType || 'ud';
       document.getElementById('newProdPrice').value = p.price;
       document.getElementById('newProdStep').value = p.step || 0.5;
       document.getElementById('newProdImage').value = p.image || '';
       document.getElementById('newProdPackSize').value = p.packSize || 2;
       document.getElementById('newProdPackUnit').value = p.packUnit || 'dozena';
-      document.getElementById('newProdTag').value = p.tag || '';
+      document.getElementById('newProdTagEu').value = p.tag?.eu || '';
+      document.getElementById('newProdTagEs').value = p.tag?.es || '';
 
       toggleLoteFields();
       document.getElementById('addProdModalTitle').innerText = 'Editatu Produktua';
@@ -1837,9 +2276,13 @@
 
       const editId = document.getElementById('editProductId').value;
       const productId = editId || ('p-' + Date.now());
-      const name = document.getElementById('newProdName').value.trim();
-      const category = document.getElementById('newProdCategory').value;
-      const tag = document.getElementById('newProdTag').value.trim();
+      const nameEu = document.getElementById('newProdNameEu').value.trim();
+      const nameEs = document.getElementById('newProdNameEs').value.trim();
+
+      const categoryId = document.getElementById('newProdCategory').value;
+
+      const tagEu = document.getElementById('newProdTagEu').value.trim();
+      const tagEs = document.getElementById('newProdTagEs').value.trim();
       const priceType = document.getElementById('newProdPriceType').value;
       const price = parseFloat(document.getElementById('newProdPrice').value);
       let step = parseFloat(document.getElementById('newProdStep').value);
@@ -1882,9 +2325,18 @@
       const existing = products.find(p => p.id === editId);
       const oldImageUrl = existing ? existing.image : '';
       const productData = {
-  name,
-  category,
-  tag,
+  name: {
+    eu: nameEu,
+    es: nameEs
+  },
+
+  categoryId,
+
+  tag: {
+    eu: tagEu,
+    es: tagEs
+  },
+
   priceType,
   unitType,
   orderUnit,
@@ -1965,7 +2417,17 @@
           renderContactsAdmin();
         }
       });
+database.ref('kategoriak').on('value', snapshot => {
+  const data = snapshot.val();
 
+  categories = data
+    ? (Array.isArray(data) ? data.filter(Boolean) : Object.values(data))
+    : [];
+
+  renderCategories();
+  populateProductCategorySelect();
+  renderAdminCategories();
+});
       database.ref('katalogoa').on('value', snapshot => {
         const data = snapshot.val();
 
@@ -2025,7 +2487,10 @@
       const orderItems = Object.keys(cart).map(id => {
         const p = products.find(prod => prod.id === id);
         return {
-          id: p ? p.id : id, name: p ? p.name : 'Produktua', qty: Number(cart[id]) || 0,
+          id: p ? p.id : id,
+nameEu: p ? p.nameEu : 'Produktua',
+nameEs: p ? p.nameEs : 'Producto',
+qty: Number(cart[id]) || 0,
           unitType: p ? (p.priceType === 'lote' ? (p.packUnit || 'lote') : (p.priceType === 'ud_kg' ? 'ud' : (p.unitType || 'ud'))) : 'ud',
           price: p ? Number(p.price) : 0, priceType: p ? (p.priceType || p.unitType || 'ud') : 'ud',
           packSize: p ? (Number(p.packSize) || 1) : 1, packUnit: p ? (p.packUnit || p.unitType || 'ud') : 'ud',
@@ -2428,6 +2893,24 @@ function handleStatsPeriodChange() {
 
   custom.classList.toggle('hidden', type !== 'custom');
 
+  if (type === 'custom') {
+    const fromInput = document.getElementById('statsDateFrom');
+    const toInput = document.getElementById('statsDateTo');
+
+    if (!fromInput.value || !toInput.value) {
+      const now = new Date();
+
+      const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+      const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+
+      const formatDateInput = d =>
+        `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+
+      fromInput.value = formatDateInput(firstDay);
+      toInput.value = formatDateInput(lastDay);
+    }
+  }
+
   renderStatistics();
 }
 
@@ -2507,6 +2990,52 @@ function formatStatsMoney(value) {
   }) + ' €';
 }
 
+    function setStatsSort(field) {
+  if (statsSortField === field) {
+    statsSortDirection =
+      statsSortDirection === 'asc' ? 'desc' : 'asc';
+  } else {
+    statsSortField = field;
+
+    statsSortDirection =
+      field === 'name' ? 'asc' : 'desc';
+  }
+
+  renderStatistics();
+}
+
+
+function getStatsQuantitySortValue(product) {
+  // Solo sirve para ordenar numéricamente.
+  // No equipara kg, unidades y docenas como magnitudes físicas.
+  return (
+    Number(product.units || 0) +
+    Number(product.kg || 0) +
+    Number(product.otherQty || 0)
+  );
+}
+
+
+function updateStatsSortIndicators() {
+  const ids = {
+    name: 'statsSortName',
+    quantity: 'statsSortQuantity',
+    orders: 'statsSortOrders',
+    revenue: 'statsSortRevenue'
+  };
+
+  Object.entries(ids).forEach(([field, id]) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+
+    if (field !== statsSortField) {
+      el.textContent = '↕';
+    } else {
+      el.textContent =
+        statsSortDirection === 'asc' ? '↑' : '↓';
+    }
+  });
+}
 
 function renderStatistics() {
   const statsTab = document.getElementById('adminStatsTab');
@@ -2642,8 +3171,42 @@ function renderStatistics() {
   });
 
 
-  const productRows = Object.values(productStats)
-    .sort((a, b) => b.revenue - a.revenue);
+  const productRows = Object.values(productStats);
+
+productRows.sort((a, b) => {
+  let result = 0;
+
+  if (statsSortField === 'name') {
+    result = (a.name || '').localeCompare(
+      b.name || '',
+      currentLang === 'eu' ? 'eu' : 'es'
+    );
+  }
+
+  else if (statsSortField === 'quantity') {
+    result =
+      getStatsQuantitySortValue(a) -
+      getStatsQuantitySortValue(b);
+  }
+
+  else if (statsSortField === 'orders') {
+    result =
+      a.orderIds.size -
+      b.orderIds.size;
+  }
+
+  else {
+    result =
+      Number(a.revenue || 0) -
+      Number(b.revenue || 0);
+  }
+
+  return statsSortDirection === 'asc'
+    ? result
+    : -result;
+});
+
+updateStatsSortIndicators();
 
   const productTable =
     document.getElementById('statsProductsTable');
