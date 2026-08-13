@@ -1557,7 +1557,7 @@
       document.getElementById('addProdModalTitle').innerText = 'Gehitu Produktu Berria Baratzerako';
       document.getElementById('newProdPackSize').value = 2;
       document.getElementById('newProdPackUnit').value = 'dozena';
-      document.getElementById('newProdTag').value = p.tag || '';
+      document.getElementById('newProdTag').value = '';
       toggleLoteFields();
       document.getElementById('addProductModal').classList.remove('hidden');
     }
@@ -1579,6 +1579,7 @@
       document.getElementById('newProdImage').value = p.image || '';
       document.getElementById('newProdPackSize').value = p.packSize || 2;
       document.getElementById('newProdPackUnit').value = p.packUnit || 'dozena';
+      document.getElementById('newProdTag').value = p.tag || '';
 
       toggleLoteFields();
       document.getElementById('addProdModalTitle').innerText = 'Editatu Produktua';
