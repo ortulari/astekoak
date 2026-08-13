@@ -1081,7 +1081,7 @@
           </div>
           <div>
             <label class="block text-xs font-semibold text-stone-700 mb-1">Unitatea (adib. dozena)</label>
-            <input type="text" id="newProdPackUnit" value="dozena" class="w-full px-3 py-2 border border-stone-300 rounded-lg text-sm">
+            <input type="text" id="newProdPackUnit" value="dozen" class="w-full px-3 py-2 border border-stone-300 rounded-lg text-sm">
           </div>
         </div>
 
@@ -1197,6 +1197,10 @@
         checkoutModalSubtitle: "Aukeratu entrega-modua eta bete zure datuak",
         deliveryHand: "Esku-eskura eman",
 deliveryPickup: "Finkan jaso",
+        unitDozen: "dozena",
+unitLot: "sorta",
+unitPiece: "ud",
+unitKg: "kg",
         // Administrazio panela
 adminTitle: "Baserritarraren panela",
 adminSubtitle: "Eskaerak, uzta, katalogoa eta banaketa kudeatu",
@@ -1337,6 +1341,10 @@ noData: "Daturik ez"
         checkoutModalSubtitle: "Elige la modalidad de entrega y completa tus datos",
         deliveryHand: "Entrega en mano",
 deliveryPickup: "Recogida en finca",
+        unitDozen: "docena",
+unitLot: "lote",
+unitPiece: "ud",
+unitKg: "kg",
         // Administrazio panela_gazt
 adminTitle: "Panel del agricultor",
 adminSubtitle: "Gestiona pedidos, cosecha, catálogo y entregas",
@@ -1950,26 +1958,41 @@ document.getElementById('textsSaveBtn').innerText = t.textsSave;
     }
 
     function switchView(view) {
-      currentView = view;
-      const storeView = document.getElementById('storeView');
-      const adminView = document.getElementById('adminView');
-      const toggleLabel = document.getElementById('viewToggleLabel');
+  currentView = view;
 
-      if (view === 'admin') {
-        storeView.classList.add('hidden');
-        adminView.classList.remove('hidden');
-        toggleLabel.innerText = I18N[currentLang].modeStore;
-        renderAdminOrders();
-        renderHarvestSummary();
-        renderAdminCatalog();
-        renderContactsAdmin();
-        renderStatistics();
-      } else {
-        adminView.classList.add('hidden');
-        storeView.classList.remove('hidden');
-        toggleLabel.innerText = I18N[currentLang].modeAdmin;
-      }
-    }
+  const storeView = document.getElementById('storeView');
+  const adminView = document.getElementById('adminView');
+  const toggleLabel = document.getElementById('viewToggleLabel');
+
+  if (view === 'admin') {
+    storeView.classList.add('hidden');
+    adminView.classList.remove('hidden');
+    toggleLabel.innerText = I18N[currentLang].modeStore;
+  } else {
+    adminView.classList.add('hidden');
+    storeView.classList.remove('hidden');
+    toggleLabel.innerText = I18N[currentLang].modeAdmin;
+  }
+
+  // Uneko hizkuntzan interfaze osoa berriz marraztu
+  updateStaticTexts();
+
+  renderCategories();
+  renderProducts();
+  renderCart();
+  populateContactSelectors();
+  populateProductCategorySelect();
+
+  if (view === 'admin') {
+    renderAdminOrders();
+    renderHarvestSummary();
+    renderAdminCatalog();
+    renderAdminCategories();
+    renderContactsAdmin();
+    renderStatistics();
+    renderTextsAdmin();
+  }
+}
 
     function toggleAdminView() {
       if (currentView === 'store') {
@@ -1989,6 +2012,19 @@ function getCategoryName(category) {
     || '';
 }
 
+function getUnitLabel(unit) {
+  const t = I18N[currentLang];
+
+  const labels = {
+    dozen: t.unitDozen,
+    lot: t.unitLot,
+    ud: t.unitPiece,
+    kg: t.unitKg
+  };
+
+  return labels[unit] || unit || '';
+}
+    
 function populateProductCategorySelect() {
   const select = document.getElementById('newProdCategory');
   if (!select) return;
@@ -2077,7 +2113,7 @@ function populateProductCategorySelect() {
 
         if (prod.priceType === 'lote') {
           step = Number(prod.packSize) || 1;
-          unitLabel = prod.packUnit || 'lote';
+          unitLabel = getUnitLabel(prod.packUnit || 'lot');
         }
 
 const displayName = getProductName(prod);
@@ -2103,7 +2139,9 @@ const displayTag = getProductTag(prod);
                 <div class="flex items-baseline gap-1">
                   <span class="font-extrabold text-stone-900 text-xl">${Number(prod.price).toFixed(2)} €</span>
                   <span class="text-xs text-stone-500 font-medium">
-                    / ${prod.priceType === 'lote' ? `${prod.packSize} ${prod.packUnit}` : (prod.priceType === 'ud_kg' ? 'kg' : unitLabel)}
+                    / ${prod.priceType === 'lote'
+  ? `${prod.packSize} ${getUnitLabel(prod.packUnit)}`
+  : (prod.priceType === 'ud_kg' ? 'kg' : getUnitLabel(unitLabel))}
                   </span>
                 </div>
               </div>
@@ -2196,7 +2234,7 @@ const displayTag = getProductTag(prod);
 
         if (p.priceType === 'lote') {
           step = Number(p.packSize) || 1;
-          unitLabel = p.packUnit || 'lote';
+          unitLabel = getUnitLabel(p.packUnit || 'lot');
         }
 
         const isWeightAfterUnits = p.priceType === 'ud_kg';
@@ -2210,7 +2248,9 @@ const displayTag = getProductTag(prod);
           <div class="flex items-center justify-between py-3">
             <div class="space-y-0.5">
               <div class="font-bold text-stone-800 text-sm">${getProductName(p)}</div>
-              <div class="text-xs text-stone-500">${Number(p.price).toFixed(2)} € / ${p.priceType === 'lote' ? `${step} ${unitLabel}` : (p.priceType === 'ud_kg' ? 'kg' : unitLabel)}</div>
+              <div class="text-xs text-stone-500">${Number(p.price).toFixed(2)} € / ${p.priceType === 'lote'
+  ? `${step} ${getUnitLabel(p.packUnit)}`
+  : (p.priceType === 'ud_kg' ? 'kg' : getUnitLabel(unitLabel))} ? `${step} ${unitLabel}` : (p.priceType === 'ud_kg' ? 'kg' : unitLabel)}</div>
             </div>
 
             <div class="flex items-center gap-3">
@@ -2683,7 +2723,8 @@ async function deleteCategory(id) {
   ${getCategoryName(categories.find(c => c.id === prod.categoryId))}
 </td>
           <td class="p-3.5 font-bold text-stone-800">${Number(prod.price).toFixed(2)} €</td>
-          <td class="p-3.5 text-stone-600">${prod.priceType === 'lote' ? `${prod.packSize} ${prod.packUnit}` : (prod.priceType === 'ud_kg' ? 'ud → €/kg' : (prod.orderUnit || prod.unitType || prod.priceType))}</td>
+          <td class="p-3.5 text-stone-600">${prod.priceType === 'lote'
+  ? `${prod.packSize} ${getUnitLabel(prod.packUnit)}` : (prod.priceType === 'ud_kg' ? 'ud → €/kg' : (prod.orderUnit || prod.unitType || prod.priceType))}</td>
           <td class="p-3.5">
             <span class="px-2.5 py-0.5 rounded-full text-xs font-bold ${prod.available ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">
               ${prod.available ? t.available : t.soldOut}
@@ -2740,7 +2781,7 @@ async function deleteCategory(id) {
       document.getElementById('editProductId').value = '';
       document.getElementById('addProdModalTitle').innerText = 'Gehitu Produktu Berria Baratzerako';
       document.getElementById('newProdPackSize').value = 2;
-      document.getElementById('newProdPackUnit').value = 'dozena';
+      document.getElementById('newProdPackUnit').value = 'dozen';
       document.getElementById('newProdNameEu').value = '';
       document.getElementById('newProdNameEs').value = '';
       document.getElementById('newProdTagEu').value = '';
@@ -2767,7 +2808,7 @@ async function deleteCategory(id) {
       document.getElementById('newProdStep').value = p.step || 0.5;
       document.getElementById('newProdImage').value = p.image || '';
       document.getElementById('newProdPackSize').value = p.packSize || 2;
-      document.getElementById('newProdPackUnit').value = p.packUnit || 'dozena';
+      document.getElementById('newProdPackUnit').value = p.packUnit || 'dozen';
       document.getElementById('newProdTagEu').value = p.tag?.eu || '';
       document.getElementById('newProdTagEs').value = p.tag?.es || '';
 
@@ -2802,7 +2843,7 @@ async function deleteCategory(id) {
       if (priceType === 'ud_kg') { unitType = 'ud'; orderUnit = 'ud'; step = 1; }
       if (priceType === 'lote') {
         packSize = parseInt(document.getElementById('newProdPackSize').value) || 1;
-        packUnit = document.getElementById('newProdPackUnit').value.trim() || 'dozena';
+        packUnit = document.getElementById('newProdPackUnit').value.trim() || 'dozen';
         unitType = packUnit; orderUnit = packUnit; step = packSize;
       }
 
@@ -3542,7 +3583,9 @@ function formatStatsQuantity(data) {
     parts.push(`${formatStatsNumber(data.kg)} kg`);
 
   if (data.otherQty > 0)
-    parts.push(`${formatStatsNumber(data.otherQty)} ${data.otherUnit || ''}`);
+    parts.push(
+  `${formatStatsNumber(data.otherQty)} ${getUnitLabel(data.otherUnit)}`
+);
 
   return parts.length ? parts.join(' · ') : '—';
 }
