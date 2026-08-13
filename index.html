@@ -2264,9 +2264,12 @@ const displayTag = getProductTag(prod);
           <div class="flex items-center justify-between py-3">
             <div class="space-y-0.5">
               <div class="font-bold text-stone-800 text-sm">${getProductName(p)}</div>
-              <div class="text-xs text-stone-500">${Number(p.price).toFixed(2)} € / ${p.priceType === 'lote'
-  ? `${step} ${getUnitLabel(p.packUnit)}`
-  : (p.priceType === 'ud_kg' ? 'kg' : getUnitLabel(unitLabel))} ? `${step} ${unitLabel}` : (p.priceType === 'ud_kg' ? 'kg' : unitLabel)}</div>
+              <div class="text-xs text-stone-500">
+  ${Number(p.price).toFixed(2)} € /
+  ${p.priceType === 'lote'
+    ? `${step} ${getUnitLabel(p.packUnit)}`
+    : (p.priceType === 'ud_kg' ? 'kg' : getUnitLabel(unitLabel))}
+</div>
             </div>
 
             <div class="flex items-center gap-3">
