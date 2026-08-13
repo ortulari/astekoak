@@ -3666,12 +3666,11 @@ function renderStatistics() {
   const periodLabel = document.getElementById('statsPeriodLabel');
 
   if (periodLabel) {
-    periodLabel.textContent =
-      const locale = currentLang === 'eu' ? 'eu-ES' : 'es-ES';
+  const locale = currentLang === 'eu' ? 'eu-ES' : 'es-ES';
 
-periodLabel.textContent =
-  `${from.toLocaleDateString(locale)} — ${to.toLocaleDateString(locale)}`;
-  }
+  periodLabel.textContent =
+    `${from.toLocaleDateString(locale)} — ${to.toLocaleDateString(locale)}`;
+}
 
 
   // ------------------------------------------------------
